@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% comment %}Layout centrado para las pantallas de autenticación.{% endcomment %}
+
+{% block body %}
+<div class="container min-vh-100 d-flex align-items-center justify-content-center py-4">
+  <div class="col-12" style="max-width: 440px;">
+    <div class="text-center mb-4">
+      <a href="{% url 'core:home' %}" class="text-decoration-none">
+        <div class="brand-badge bg-dark rounded-3 text-white d-inline-flex mb-2">
+          <i class="fa-solid fa-circle-nodes text-info"></i>
+        </div>
+        <div class="fw-bold text-dark fs-5">RondaNegocios</div>
+      </a>
+    </div>
+    <div class="glass-card p-4 p-md-5">
+      {% block auth_content %}{% endblock %}
+    </div>
+    {% block auth_footer %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

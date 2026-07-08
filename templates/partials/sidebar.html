@@ -1,0 +1,35 @@
+{% comment %}
+  Menú lateral. En desktop (>=lg) es una columna estática; en mobile es un
+  offcanvas de Bootstrap que se abre con el botón hamburguesa de la navbar.
+  `active_section` se pasa desde la vista para marcar el link activo.
+{% endcomment %}
+<div class="offcanvas-lg offcanvas-start glass-sidebar app-sidebar" tabindex="-1" id="appSidebar"
+     aria-labelledby="appSidebarLabel">
+  <div class="offcanvas-header d-lg-none">
+    <h6 class="offcanvas-title fw-bold m-0" id="appSidebarLabel">Menú</h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"
+            data-bs-target="#appSidebar" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <nav class="nav flex-column w-100">
+      <a class="sidebar-link {% if active_section == 'dashboard' %}active{% endif %}" href="{% url 'core:dashboard' %}">
+        <i class="fa-solid fa-chart-pie"></i> Dashboard
+      </a>
+      <a class="sidebar-link {% if active_section == 'rondas' %}active{% endif %}" href="#">
+        <i class="fa-solid fa-handshake"></i> Mis Rondas
+      </a>
+      <a class="sidebar-link {% if active_section == 'empresa' %}active{% endif %}" href="#">
+        <i class="fa-solid fa-building"></i> Perfil Empresa
+      </a>
+      <a class="sidebar-link {% if active_section == 'red' %}active{% endif %}" href="#">
+        <i class="fa-solid fa-network-wired"></i> Red de Empresas
+      </a>
+      <a class="sidebar-link {% if active_section == 'credenciales' %}active{% endif %}" href="#">
+        <i class="fa-solid fa-qrcode"></i> Credenciales
+      </a>
+      <a class="sidebar-link {% if active_section == 'ajustes' %}active{% endif %}" href="{% url 'accounts:profile' %}">
+        <i class="fa-solid fa-gears"></i> Ajustes
+      </a>
+    </nav>
+  </div>
+</div>

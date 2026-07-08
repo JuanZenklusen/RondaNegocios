@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}RondaNegocios — Vinculación empresarial y rondas de negocios{% endblock %}
+
+{% block body %}
+<div class="container py-3 py-md-4">
+
+  <!-- Top bar pública -->
+  <nav class="d-flex align-items-center justify-content-between mb-4 mb-md-5">
+    <div class="d-flex align-items-center">
+      <div class="brand-badge bg-dark rounded-3 text-white me-2">
+        <i class="fa-solid fa-circle-nodes text-info"></i>
+      </div>
+      <span class="fw-bold text-dark fs-5">RondaNegocios</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'core:dashboard' %}" class="btn btn-sm btn-dark-glass px-3 py-2">Ir al panel</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3">Ingresar</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-sm btn-dark-glass px-3 py-2">Registrar empresa</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="row align-items-center g-4 mb-5">
+    <div class="col-12 col-lg-6">
+      <span class="badge badge-glass-match mb-3"><i class="fa-solid fa-fire me-1"></i> Networking B2B inteligente</span>
+      <h1 class="hero-title display-5 mb-3">
+        Conectá tu empresa en las <span style="color: var(--accent-blue);">rondas de negocios</span> que importan.
+      </h1>
+      <p class="fs-6 text-secondary mb-4">
+        Creá tu perfil, inscribite a eventos, gestioná tu agenda de reuniones con
+        asignación automática de mesas y descubrí oportunidades con nuestro motor
+        de matching. Todo desde el celular.
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="{% url 'accounts:register' %}" class="btn btn-dark-glass px-4 py-2">
+          <i class="fa-solid fa-rocket me-1"></i> Empezar ahora
+        </a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-outline-dark rounded-3 px-4 py-2">
+          Ingresar
+        </a>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="premium-blue-card p-4 p-md-5">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <span class="small opacity-75 fw-medium">Credencial Corporativa</span>
+            <h4 class="fw-bold m-0 mt-1">TechSolutions SRL</h4>
+          </div>
+          <i class="fa-solid fa-fingerprint fs-2 opacity-50"></i>
+        </div>
+        <div class="mt-4 pt-2 d-flex justify-content-between align-items-center">
+          <div>
+            <p class="mb-1 small opacity-75">CUIT: 30-74839201-9</p>
+            <span class="fw-semibold">Mesa Asignada: #14</span>
+          </div>
+          <div class="qr-box"><i class="fa-solid fa-qrcode"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="row g-3 g-md-4">
+    <div class="col-12 col-md-4">
+      <div class="glass-card p-4 h-100">
+        <div class="feature-icon mb-3"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <h6 class="fw-bold">Matching inteligente</h6>
+        <p class="small text-secondary m-0">
+          Sugerencias automáticas de empresas compatibles según lo que ofrecés y buscás.
+        </p>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="glass-card p-4 h-100">
+        <div class="feature-icon mb-3"><i class="fa-regular fa-calendar-days"></i></div>
+        <h6 class="fw-bold">Agenda de reuniones</h6>
+        <p class="small text-secondary m-0">
+          Solicitá, confirmá y gestioná entrevistas con asignación de mesa y horario.
+        </p>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="glass-card p-4 h-100">
+        <div class="feature-icon mb-3"><i class="fa-solid fa-qrcode"></i></div>
+        <h6 class="fw-bold">Acreditación con QR</h6>
+        <p class="small text-secondary m-0">
+          Credenciales digitales para tus representantes con check-in en el evento.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-muted small mt-5">
+    RondaNegocios · Prototipo de UI (Fase 0) — sistema de diseño glassmorphism
+  </p>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% comment %}Barra superior de la app autenticada.{% endcomment %}
+<div class="glass-navbar d-flex flex-wrap align-items-center justify-content-between gap-3">
+  <div class="d-flex align-items-center">
+    <button class="btn btn-sm d-lg-none me-2 px-2" type="button"
+            data-bs-toggle="offcanvas" data-bs-target="#appSidebar" aria-controls="appSidebar"
+            aria-label="Abrir menú">
+      <i class="fa-solid fa-bars fs-5"></i>
+    </button>
+    <div class="brand-badge bg-dark rounded-3 text-white me-2">
+      <i class="fa-solid fa-circle-nodes text-info"></i>
+    </div>
+    <span class="fw-bold text-dark fs-5">RondaNegocios</span>
+  </div>
+
+  <div class="d-none d-md-flex flex-grow-1 justify-content-center px-3" style="max-width: 420px;">
+    <input type="search" class="search-box w-100" placeholder="Buscar empresas, eventos...">
+  </div>
+
+  <div class="d-flex align-items-center gap-3">
+    <i class="fa-regular fa-envelope fs-5 text-secondary" role="button"></i>
+    <i class="fa-regular fa-bell fs-5 text-secondary" role="button"></i>
+    <div class="dropdown">
+      <a href="#" class="d-flex align-items-center gap-2 border-start ps-3 text-decoration-none text-dark dropdown-toggle"
+         data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="avatar-circle bg-dark text-white rounded-circle fw-bold">
+          {{ request.user.first_name|first|default:request.user.email|first|upper }}
+        </div>
+        <div class="d-none d-lg-block lh-1 text-start">
+          <span class="fw-semibold small d-block">
+            {{ request.user.get_full_name|default:request.user.email }}
+          </span>
+          <span class="text-muted" style="font-size: 0.75rem;">{{ request.user.get_role_display }}</span>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fa-solid fa-user me-2"></i>Mi perfil</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form method="post" action="{% url 'accounts:logout' %}" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item text-danger">
+              <i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión
+            </button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

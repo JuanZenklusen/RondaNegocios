@@ -36,9 +36,23 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third-party apps
+    "crispy_forms",
+    "crispy_bootstrap5",
     # Local apps
+    "apps.core",
     "apps.accounts",
+    "apps.organizations",
 ]
+
+# django-crispy-forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Autenticación
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "core:dashboard"
+LOGOUT_REDIRECT_URL = "core:home"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

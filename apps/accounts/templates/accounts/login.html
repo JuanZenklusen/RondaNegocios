@@ -1,0 +1,28 @@
+{% extends "accounts/auth_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Ingresar — RondaNegocios{% endblock %}
+
+{% block auth_content %}
+<h4 class="fw-bold mb-1">Ingresá</h4>
+<p class="text-secondary small mb-4">Accedé a tu cuenta de RondaNegocios.</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form|crispy }}
+  {% if form.non_field_errors %}{% endif %}
+  <div class="text-end mb-3">
+    <a href="{% url 'accounts:password_reset' %}" class="small">¿Olvidaste tu contraseña?</a>
+  </div>
+  <button type="submit" class="btn btn-dark-glass w-100 py-2">
+    <i class="fa-solid fa-right-to-bracket me-1"></i> Ingresar
+  </button>
+  <input type="hidden" name="next" value="{{ next }}">
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+<p class="text-center small mt-3 text-secondary">
+  ¿No tenés cuenta? <a href="{% url 'accounts:register' %}" class="fw-semibold">Registrá tu empresa</a>
+</p>
+{% endblock %}

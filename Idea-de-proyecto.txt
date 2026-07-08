@@ -53,6 +53,7 @@ Tener en cuenta lo siguiente:
 * Bootstrap 5
 * JavaScript
 * Diseño Mobile First
+* Confirmaciones y mensajes en pantallas todas con sweet alert
 
 ## Base de Datos
 
