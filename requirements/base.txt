@@ -1,3 +1,7 @@
 django>=4.2,<4.3
 psycopg[binary]>=3.3,<3.4
 django-environ>=0.14,<0.15
+django-crispy-forms>=2,<3
+crispy-bootstrap5>=2024.10,<2025
+Pillow>=10
+qrcode>=8,<9

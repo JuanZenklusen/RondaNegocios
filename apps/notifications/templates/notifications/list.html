@@ -1,0 +1,47 @@
+{% extends "app_base.html" %}
+
+{% block title %}Notificaciones — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">Actividad</span>
+    <h2 class="fw-bold m-0 text-dark">Notificaciones</h2>
+  </div>
+  {% if nav_unread_notifications %}
+    <form method="post" action="{% url 'notifications:mark_all_read' %}">
+      {% csrf_token %}
+      <button class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-solid fa-check-double me-1"></i>Marcar todas leídas</button>
+    </form>
+  {% endif %}
+</div>
+
+{% if notifications %}
+  <div class="glass-card p-2">
+    {% for n in notifications %}
+      <a href="{% url 'notifications:open' n.pk %}"
+         class="d-flex align-items-start gap-3 p-3 text-decoration-none text-reset border-bottom {% if not n.is_read %}bg-white bg-opacity-25{% endif %} rounded-3">
+        <div class="feature-icon flex-shrink-0" style="width: 40px; height: 40px; font-size: 1rem;
+          {% if n.level == 'success' %}background: rgba(16,185,129,0.12); color: var(--success);
+          {% elif n.level == 'warning' %}background: rgba(245,158,11,0.12); color: var(--warning);{% endif %}">
+          <i class="fa-solid {% if n.level == 'success' %}fa-circle-check{% elif n.level == 'warning' %}fa-triangle-exclamation{% else %}fa-bell{% endif %}"></i>
+        </div>
+        <div class="flex-grow-1" style="min-width: 0;">
+          <div class="d-flex justify-content-between gap-2">
+            <span class="{% if not n.is_read %}fw-bold{% else %}fw-semibold{% endif %}">{{ n.title }}</span>
+            <span class="small text-muted flex-shrink-0">{{ n.created_at|date:"d/m H:i" }}</span>
+          </div>
+          {% if n.message %}<div class="small text-secondary">{{ n.message }}</div>{% endif %}
+        </div>
+        {% if not n.is_read %}<span class="badge bg-primary rounded-pill">nuevo</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="glass-card p-5 text-center">
+    <div class="feature-icon mx-auto mb-3"><i class="fa-regular fa-bell"></i></div>
+    <h6 class="fw-bold">No tenés notificaciones</h6>
+    <p class="small text-secondary mb-0">Acá vas a ver solicitudes, reuniones confirmadas y más.</p>
+  </div>
+{% endif %}
+{% endblock %}

@@ -46,6 +46,12 @@ INSTALLED_APPS = [
     "apps.companies",
     "apps.networking",
     "apps.events",
+    "apps.registrations",
+    "apps.meetings",
+    "apps.matching",
+    "apps.agenda",
+    "apps.accreditation",
+    "apps.notifications",
 ]
 
 # django-crispy-forms
@@ -79,6 +85,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.notifications.context_processors.notifications",
             ],
         },
     },

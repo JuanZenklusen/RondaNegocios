@@ -57,6 +57,10 @@ class CompanyProfileEditView(CompanyRequiredMixin, View):
             product_fs.save()
             service_fs.save()
             need_fs.save()
+            # Recalcula la compatibilidad con el resto de las empresas.
+            from apps.matching.services import recompute_company_matches
+
+            recompute_company_matches(company)
             messages.success(request, "Perfil de empresa actualizado correctamente.")
             return redirect("companies:profile_edit")
 

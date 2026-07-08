@@ -1,5 +1,5 @@
 {% extends "app_base.html" %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags crispy_forms_field %}
 
 {% block title %}Perfil de empresa — RondaNegocios{% endblock %}
 
@@ -20,16 +20,102 @@
 <form method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
 
-  <div class="glass-card p-4 mb-3">
-    <h6 class="fw-bold mb-3"><i class="fa-solid fa-building text-primary me-2"></i>Datos institucionales</h6>
-    {{ form|crispy }}
+  <!-- Pestañas -->
+  <ul class="nav nav-pills glass-tabs gap-2 mb-3 pb-2" id="profileTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-datos" type="button">
+        <i class="fa-solid fa-building me-1"></i> Datos
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-contacto" type="button">
+        <i class="fa-solid fa-address-card me-1"></i> Contacto
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-ubicacion" type="button">
+        <i class="fa-solid fa-location-dot me-1"></i> Ubicación
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-productos" type="button">
+        <i class="fa-solid fa-box me-1"></i> Productos
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-servicios" type="button">
+        <i class="fa-solid fa-gear me-1"></i> Servicios
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-necesidades" type="button">
+        <i class="fa-solid fa-magnifying-glass me-1"></i> Necesidades
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="profilePanes">
+    <!-- Datos institucionales -->
+    <div class="tab-pane fade show active" id="tab-datos" role="tabpanel">
+      <div class="glass-card p-4">
+        <div class="row">
+          <div class="col-12 col-md-6">{{ form.razon_social|as_crispy_field }}</div>
+          <div class="col-12 col-md-6">{{ form.nombre_fantasia|as_crispy_field }}</div>
+          <div class="col-12 col-md-6">{{ form.cuit|as_crispy_field }}</div>
+          <div class="col-12 col-md-6">{{ form.rubro|as_crispy_field }}</div>
+        </div>
+        {{ form.description|as_crispy_field }}
+        {{ form.logo|as_crispy_field }}
+        <div class="row">
+          <div class="col-12 col-md-4">{{ form.employees_count|as_crispy_field }}</div>
+        </div>
+        {{ form.production_capacity|as_crispy_field }}
+        {{ form.certifications|as_crispy_field }}
+        <div class="form-check mt-2">{{ form.is_public }} <label class="form-check-label" for="{{ form.is_public.id_for_label }}">{{ form.is_public.label }}</label></div>
+      </div>
+    </div>
+
+    <!-- Contacto y redes -->
+    <div class="tab-pane fade" id="tab-contacto" role="tabpanel">
+      <div class="glass-card p-4">
+        <div class="row">
+          <div class="col-12 col-md-6">{{ form.website|as_crispy_field }}</div>
+          <div class="col-12 col-md-6">{{ form.email|as_crispy_field }}</div>
+          <div class="col-12 col-md-6">{{ form.phone|as_crispy_field }}</div>
+        </div>
+        <div class="row">
+          <div class="col-12 col-md-4">{{ form.linkedin|as_crispy_field }}</div>
+          <div class="col-12 col-md-4">{{ form.instagram|as_crispy_field }}</div>
+          <div class="col-12 col-md-4">{{ form.facebook|as_crispy_field }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ubicación -->
+    <div class="tab-pane fade" id="tab-ubicacion" role="tabpanel">
+      <div class="glass-card p-4">
+        {{ form.address|as_crispy_field }}
+        <div class="row">
+          <div class="col-12 col-md-4">{{ form.city|as_crispy_field }}</div>
+          <div class="col-12 col-md-4">{{ form.province|as_crispy_field }}</div>
+          <div class="col-12 col-md-4">{{ form.country|as_crispy_field }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos / Servicios / Necesidades -->
+    <div class="tab-pane fade" id="tab-productos" role="tabpanel">
+      {% include "companies/_formset_section.html" with formset=product_formset prefix="products" title="Productos" icon="fa-solid fa-box" %}
+    </div>
+    <div class="tab-pane fade" id="tab-servicios" role="tabpanel">
+      {% include "companies/_formset_section.html" with formset=service_formset prefix="services" title="Servicios" icon="fa-solid fa-gear" %}
+    </div>
+    <div class="tab-pane fade" id="tab-necesidades" role="tabpanel">
+      {% include "companies/_formset_section.html" with formset=need_formset prefix="needs" title="Necesidades (lo que busco)" icon="fa-solid fa-magnifying-glass" %}
+    </div>
   </div>
 
-  {% include "companies/_formset_section.html" with formset=product_formset prefix="products" title="Productos" icon="fa-solid fa-box" %}
-  {% include "companies/_formset_section.html" with formset=service_formset prefix="services" title="Servicios" icon="fa-solid fa-gear" %}
-  {% include "companies/_formset_section.html" with formset=need_formset prefix="needs" title="Necesidades (lo que busco)" icon="fa-solid fa-magnifying-glass" %}
-
-  <div class="d-flex justify-content-end gap-2 mb-4">
+  <div class="d-flex justify-content-end gap-2 my-4">
     <button type="submit" class="btn btn-dark-glass px-4 py-2">
       <i class="fa-solid fa-floppy-disk me-1"></i> Guardar cambios
     </button>
@@ -39,13 +125,13 @@
 
 {% block extra_js %}
 <script>
+  // "Agregar fila" en los formsets.
   document.querySelectorAll('.formset-section').forEach(function (section) {
     var prefix = section.dataset.prefix;
     var addBtn = section.querySelector('.add-row');
     var rows = section.querySelector('.formset-rows');
     var tmpl = section.querySelector('.empty-template');
     var totalInput = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
-
     addBtn.addEventListener('click', function () {
       var count = parseInt(totalInput.value, 10);
       var html = tmpl.innerHTML.replace(/__prefix__/g, count);
@@ -55,5 +141,21 @@
       totalInput.value = count + 1;
     });
   });
+
+  // Si hay errores de validación, resaltar la pestaña y abrir la primera con error.
+  (function () {
+    var panes = document.querySelectorAll('#profilePanes .tab-pane');
+    var firstErrorBtn = null;
+    panes.forEach(function (pane) {
+      if (pane.querySelector('.is-invalid, .invalid-feedback, .field-error')) {
+        var btn = document.querySelector('[data-bs-target="#' + pane.id + '"]');
+        if (btn) {
+          btn.classList.add('has-error');
+          if (!firstErrorBtn) firstErrorBtn = btn;
+        }
+      }
+    });
+    if (firstErrorBtn) new bootstrap.Tab(firstErrorBtn).show();
+  })();
 </script>
 {% endblock %}

@@ -30,14 +30,19 @@ class EventForm(forms.ModelForm):
             "capacity",
             "general_price",
             "is_public",
+            "requires_approval",
             "meeting_duration_minutes",
             "meetings_per_company",
             "tables_count",
+            "round_start_time",
+            "round_end_time",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 3}),
             "start_date": _DateInput(format="%Y-%m-%d"),
             "end_date": _DateInput(format="%Y-%m-%d"),
+            "round_start_time": forms.TimeInput(attrs={"type": "time"}, format="%H:%M"),
+            "round_end_time": forms.TimeInput(attrs={"type": "time"}, format="%H:%M"),
         }
 
     def __init__(self, *args, **kwargs):

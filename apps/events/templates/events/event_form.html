@@ -30,6 +30,24 @@
     </button>
   </div>
 </form>
+
+{% if object %}
+  <div class="glass-card p-4 mb-4">
+    <h6 class="fw-bold mb-2"><i class="fa-solid fa-table-cells text-primary me-2"></i>Cronograma de la ronda</h6>
+    <p class="small text-secondary">
+      Genera las mesas ({{ object.tables_count }}) y los bloques horarios a partir
+      de la duración de reunión y los horarios de la ronda. Actualmente:
+      <strong>{{ object.tables.count }}</strong> mesas y
+      <strong>{{ object.time_blocks.count }}</strong> bloques.
+    </p>
+    <form method="post" action="{% url 'events:generate_schedule' object.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-dark rounded-3 px-3">
+        <i class="fa-solid fa-gears me-1"></i> Generar cronograma
+      </button>
+    </form>
+  </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

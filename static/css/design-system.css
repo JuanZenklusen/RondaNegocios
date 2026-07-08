@@ -235,3 +235,35 @@ body {
     min-height: calc(100vh - 71px);
   }
 }
+
+/* --------------------------------------------------------------------------
+   Pestañas glass (formularios largos con secciones)
+   -------------------------------------------------------------------------- */
+.glass-tabs {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.glass-tabs .nav-link {
+  color: var(--text-muted);
+  border-radius: 12px;
+  white-space: nowrap;
+  font-weight: 500;
+  padding: 8px 16px;
+}
+.glass-tabs .nav-link:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--text-main);
+}
+.glass-tabs .nav-link.active {
+  background: var(--dark);
+  color: #fff;
+}
+.glass-tabs .nav-link.has-error {
+  color: #dc2626;
+}
+.field-error {
+  color: #dc2626;
+}

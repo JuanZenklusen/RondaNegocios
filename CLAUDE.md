@@ -159,7 +159,7 @@ body {
 
 ## Estado actual
 
-**Fases 0-5 completas** (58 tests verdes). Fase 0: shell de UI. Fase 1: auth
+**Fases 0-6 + 8-12 completas** (129 tests verdes; la Fase 7 —pagos MP— se pospuso). Fase 0: shell de UI. Fase 1: auth
 (**login por email**). Fase 2: multi-tenant — `Organization`, base abstracta
 **`OrganizationScopedModel`** (heredarla en todo modelo del dominio) con
 `.for_user(user)`, `User.organization`, org por defecto (`slug="principal"`),
@@ -169,9 +169,38 @@ validador **CUIT**, edición crispy + inline formsets, perfil público `/empresa
 Fase 4: app `networking` — `Favorite`, `ConnectionRequest`, directorio con
 búsqueda/filtros, endpoints JSON (fetch+CSRF). `_MyCompanyMixin` da `self.my_company`.
 Fase 5: app `events` — `Event` (scoped), `Activity` (programa), `Table`, `TimeBlock`;
-CRUD organizador (inline formset de actividades); listado/detalle público;
-**pagos SIMULADOS** con SweetAlert (integración real = fase posterior). Nuevo rol
-**`attendee`** (público) con su registro.
+CRUD organizador (inline formset de actividades); listado/detalle público. Nuevo rol
+**`attendee`** (público) con su registro. Fase 6: app `registrations` —
+`Registration` (event+user, estados, pago); inscripción de empresas y asistentes
+(cupos vía `Event.capacity`/`is_full`, aprobación auto o manual con
+`Event.requires_approval`); **pago SIMULADO** (`payment=simulated`, sin pasarela;
+Mercado Pago = fase posterior); "Mis inscripciones" + gestión del organizador.
+Fase 8: app `meetings` — `MeetingRequest`/`Meeting`; organizador genera cronograma
+(`events.services.generate_event_schedule` crea `Table`/`TimeBlock` desde
+`round_start_time`/`round_end_time`); empresa confirmada solicita reunión → la otra
+acepta → `Meeting` con **mesa asignada automáticamente** y **anti-solapamiento**
+(empresa/mesa por bloque); agenda por empresa en `/eventos/<slug>/ronda/`.
+Fase 9: app `matching` — `Match` (score 0-100); scoring por complementariedad
+oferta↔necesidad (70%) + rubro (15%) + provincia (15%) en `scoring.py`;
+`recompute_company_matches` (al guardar perfil) / `recompute_all` / command
+`recompute_matches`; `top_matches_for`/`match_scores_map`; sugerencias en dashboard,
+badge de % match en directorio y ronda. Filtro template `core_extras.dict_get`.
+Fase 10: app `agenda` — `ActivityAttendance`; **agenda personal por evento** en
+`/eventos/<slug>/mi-agenda/` donde el inscripto elige a qué actividades asiste
+(toggle) y la agenda se autocompleta con actividades + reuniones confirmadas
+(`selectors.personal_agenda`, programa multi-día). Los `TimeBlock` de la ronda se
+derivan de la ventana de la actividad "Ronda de negocios"
+(`events.services.generate_event_schedule` / `_round_windows`).
+Fase 11: app `accreditation` — `Participant` (representantes de empresa) y
+`Accreditation` (credencial con `code` único, check-in/out). Credencial digital con
+**QR** (lib `qrcode`, PNG on-the-fly en `QRView`, el QR apunta a la URL de check-in);
+empresa acredita representantes, asistente tiene credencial propia; organizador
+escanea y registra ingreso/egreso. Sidebar "Credenciales".
+Fase 12: app `notifications` — `Notification` (campanita) y `Message` (mensajería
+directa). `services.notify()` (interna + email opcional) disparado desde
+meetings/networking/registrations (import lazy para evitar circular);
+`send_message()`; `context_processors.notifications` alimenta navbar
+(`nav_unread_notifications`/`nav_unread_messages`/`nav_recent_notifications`).
 
 **Roles**: superadmin, organization, company, representative, attendee.
 **Manual de usuario**: `docs/MANUAL-USUARIO.md` — actualizar al cerrar cada fase.
@@ -182,4 +211,5 @@ puerto en el sandbox — validar con test client (`Client(SERVER_NAME='localhost
 (4) Pillow instalado. (5) Datos demo: `python manage.py seed_demo` (empresas/eventos
 ficticios); credenciales en `CREDENCIALES-DEMO.txt` (git-ignored).
 
-**Próximo: Fase 6 (inscripciones a eventos).** Ver `docs/DEVELOPMENT-PLAN.md`.
+**Próximo: Fase 13 (dashboards y reportes con métricas reales).** Fase 7 (pagos
+Mercado Pago) pospuesta por decisión del usuario. Ver `docs/DEVELOPMENT-PLAN.md`.

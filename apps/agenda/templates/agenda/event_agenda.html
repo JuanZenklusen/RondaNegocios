@@ -1,0 +1,104 @@
+{% extends "app_base.html" %}
+
+{% block title %}Mi agenda — {{ event.name }}{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">{{ event.name }}</span>
+    <h2 class="fw-bold m-0 text-dark">Mi agenda</h2>
+  </div>
+  <a href="{% url 'registrations:mine' %}" class="btn btn-sm btn-outline-dark rounded-3">
+    <i class="fa-solid fa-arrow-left me-1"></i> Mis inscripciones
+  </a>
+</div>
+
+<div class="row g-4">
+  <!-- Mi agenda autocompletada -->
+  <div class="col-12 col-xl-6" id="mi-agenda">
+    <h5 class="fw-bold mb-3 fs-6"><i class="fa-regular fa-calendar-check text-primary me-2"></i>Tu cronograma</h5>
+    {% if agenda %}
+      {% for day, items in agenda %}
+        <div class="glass-card p-3 mb-3">
+          <h6 class="fw-bold mb-3 text-capitalize">{{ day|date:"l d/m/Y" }}</h6>
+          {% for it in items %}
+            <div class="agenda-row {% if it.kind == 'meeting' %}confirmed{% else %}pending{% endif %} p-3 mb-2">
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                  {% if it.kind == 'meeting' %}
+                    <span class="badge bg-success bg-opacity-25 text-success mb-1"><i class="fa-solid fa-handshake me-1"></i>Reunión · Mesa {{ it.table }}</span>
+                  {% else %}
+                    <span class="badge badge-glass-match mb-1">{{ it.type }}</span>
+                  {% endif %}
+                  <h6 class="fw-bold m-0">{{ it.title }}</h6>
+                  {% if it.room %}<span class="small text-secondary"><i class="fa-solid fa-door-open me-1"></i>{{ it.room }}</span>{% endif %}
+                </div>
+                <span class="small fw-medium text-muted">
+                  {{ it.start|date:"H:i" }}{% if it.end %}–{{ it.end|date:"H:i" }}{% endif %}
+                </span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="glass-card p-4 text-center">
+        <div class="feature-icon mx-auto mb-2"><i class="fa-regular fa-calendar"></i></div>
+        <p class="small text-secondary mb-0">
+          Tu agenda está vacía. Elegí a qué actividades asistís desde el programa
+          {% if is_company %}o coordiná reuniones en la ronda de negocios{% endif %}.
+        </p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Programa del evento -->
+  <div class="col-12 col-xl-6" id="programa">
+    <h5 class="fw-bold mb-3 fs-6"><i class="fa-solid fa-list-check text-primary me-2"></i>Programa del evento</h5>
+    {% for day, activities in program %}
+      <div class="glass-card p-3 mb-3">
+        <h6 class="fw-bold mb-3 text-capitalize">{{ day|date:"l d/m/Y" }}</h6>
+        {% for a in activities %}
+          <div class="border rounded-3 p-3 mb-2 bg-white bg-opacity-25">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+              <div>
+                <span class="badge badge-glass-match mb-1">{{ a.get_activity_type_display }}</span>
+                {% if a.is_public %}
+                  <span class="badge bg-success bg-opacity-25 text-success mb-1">Abierta al público</span>
+                {% else %}
+                  <span class="badge bg-secondary bg-opacity-25 text-secondary mb-1">Solo empresas</span>
+                {% endif %}
+                <h6 class="fw-bold m-0">{{ a.title }}</h6>
+                <span class="small text-secondary">
+                  <i class="fa-regular fa-clock me-1"></i>{{ a.start|date:"H:i" }}{% if a.end %}–{{ a.end|date:"H:i" }}{% endif %}
+                  {% if a.room %}· {{ a.room }}{% endif %}
+                </span>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+              {% if a.activity_type == 'business_round' and is_company %}
+                <a href="{% url 'meetings:round' event.slug %}" class="btn btn-sm btn-dark-glass py-2">
+                  <i class="fa-solid fa-handshake me-1"></i> Coordinar reuniones
+                </a>
+              {% endif %}
+              <form method="post" action="{% url 'agenda:toggle_activity' event.slug a.pk %}">
+                {% csrf_token %}
+                {% if a.pk in attending_ids %}
+                  <button class="btn btn-sm btn-outline-danger rounded-3"><i class="fa-solid fa-xmark me-1"></i>Quitar de mi agenda</button>
+                {% else %}
+                  <button class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-solid fa-plus me-1"></i>Agregar a mi agenda</button>
+                {% endif %}
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% empty %}
+      <div class="glass-card p-4 text-center">
+        <p class="small text-secondary mb-0">El evento todavía no tiene actividades en el programa.</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

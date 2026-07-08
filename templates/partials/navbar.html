@@ -17,8 +17,47 @@
   </div>
 
   <div class="d-flex align-items-center gap-3">
-    <i class="fa-regular fa-envelope fs-5 text-secondary" role="button"></i>
-    <i class="fa-regular fa-bell fs-5 text-secondary" role="button"></i>
+    <!-- Mensajes -->
+    <a href="{% url 'notifications:inbox' %}" class="position-relative text-secondary" title="Mensajes">
+      <i class="fa-regular fa-envelope fs-5"></i>
+      {% if nav_unread_messages %}
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">{{ nav_unread_messages }}</span>
+      {% endif %}
+    </a>
+
+    <!-- Notificaciones (campanita) -->
+    <div class="dropdown">
+      <a href="#" class="position-relative text-secondary" data-bs-toggle="dropdown" aria-expanded="false" title="Notificaciones">
+        <i class="fa-regular fa-bell fs-5"></i>
+        {% if nav_unread_notifications %}
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">{{ nav_unread_notifications }}</span>
+        {% endif %}
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 300px; max-width: 340px;">
+        <li class="dropdown-header d-flex justify-content-between align-items-center">
+          <span>Notificaciones</span>
+          {% if nav_unread_notifications %}
+            <form method="post" action="{% url 'notifications:mark_all_read' %}" class="m-0">
+              {% csrf_token %}
+              <button class="btn btn-sm p-0 border-0 text-primary" style="font-size: 0.75rem;">Marcar leídas</button>
+            </form>
+          {% endif %}
+        </li>
+        {% for n in nav_recent_notifications %}
+          <li>
+            <a class="dropdown-item small py-2 {% if not n.is_read %}fw-semibold{% endif %}" href="{% url 'notifications:open' n.pk %}">
+              <div class="text-truncate">{{ n.title }}</div>
+              {% if n.message %}<div class="text-secondary text-truncate" style="font-size: 0.75rem;">{{ n.message }}</div>{% endif %}
+            </a>
+          </li>
+        {% empty %}
+          <li><span class="dropdown-item-text small text-secondary">Sin notificaciones</span></li>
+        {% endfor %}
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item small text-center" href="{% url 'notifications:list' %}">Ver todas</a></li>
+      </ul>
+    </div>
+
     <div class="dropdown">
       <a href="#" class="d-flex align-items-center gap-2 border-start ps-3 text-decoration-none text-dark dropdown-toggle"
          data-bs-toggle="dropdown" aria-expanded="false">

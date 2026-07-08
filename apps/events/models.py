@@ -74,6 +74,11 @@ class Event(OrganizationScopedModel):
     )
 
     is_public = models.BooleanField("visible al público", default=True)
+    requires_approval = models.BooleanField(
+        "requiere aprobación manual",
+        default=False,
+        help_text="Si está activo, las inscripciones quedan pendientes de aprobación.",
+    )
 
     # Configuración de la ronda de negocios
     meeting_duration_minutes = models.PositiveIntegerField(
@@ -83,6 +88,8 @@ class Event(OrganizationScopedModel):
         "reuniones por empresa", null=True, blank=True
     )
     tables_count = models.PositiveIntegerField("cantidad de mesas", default=0)
+    round_start_time = models.TimeField("hora de inicio de la ronda", null=True, blank=True)
+    round_end_time = models.TimeField("hora de fin de la ronda", null=True, blank=True)
 
     created_at = models.DateTimeField("creado", auto_now_add=True)
     updated_at = models.DateTimeField("actualizado", auto_now=True)
@@ -110,6 +117,21 @@ class Event(OrganizationScopedModel):
     @property
     def is_free(self):
         return self.general_price == 0
+
+    @property
+    def taken_slots(self):
+        """Inscripciones que ocupan cupo (confirmadas o pendientes)."""
+        return self.registrations.filter(status__in=["pending", "confirmed"]).count()
+
+    @property
+    def available_slots(self):
+        if self.capacity is None:
+            return None
+        return max(self.capacity - self.taken_slots, 0)
+
+    @property
+    def is_full(self):
+        return self.capacity is not None and self.taken_slots >= self.capacity
 
 
 class Activity(models.Model):

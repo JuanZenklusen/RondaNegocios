@@ -1,0 +1,39 @@
+{% extends "app_base.html" %}
+
+{% block title %}Mensajes — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="mb-4">
+  <span class="text-secondary small fw-medium">Mensajería</span>
+  <h2 class="fw-bold m-0 text-dark">Mensajes</h2>
+</div>
+
+{% if conversations %}
+  <div class="glass-card p-2">
+    {% for c in conversations %}
+      <a href="{% url 'notifications:conversation' c.other.pk %}"
+         class="d-flex align-items-center gap-3 p-3 text-decoration-none text-reset border-bottom rounded-3">
+        <div class="avatar-circle bg-dark text-white rounded-circle fw-bold flex-shrink-0">
+          {{ c.other.first_name|first|default:c.other.email|first|upper }}
+        </div>
+        <div class="flex-grow-1" style="min-width: 0;">
+          <div class="d-flex justify-content-between gap-2">
+            <span class="fw-semibold">{{ c.other.get_full_name|default:c.other.email }}</span>
+            <span class="small text-muted flex-shrink-0">{{ c.last.created_at|date:"d/m H:i" }}</span>
+          </div>
+          <div class="small text-secondary text-truncate">
+            {% if c.last.sender == request.user %}<i class="fa-solid fa-reply me-1"></i>{% endif %}{{ c.last.body }}
+          </div>
+        </div>
+        {% if c.unread %}<span class="badge bg-primary rounded-pill">{{ c.unread }}</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="glass-card p-5 text-center">
+    <div class="feature-icon mx-auto mb-3"><i class="fa-regular fa-envelope"></i></div>
+    <h6 class="fw-bold">No tenés mensajes</h6>
+    <p class="small text-secondary mb-0">Podés escribirle a una empresa desde su perfil o el directorio.</p>
+  </div>
+{% endif %}
+{% endblock %}

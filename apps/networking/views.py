@@ -59,6 +59,10 @@ class DirectoryView(_MyCompanyMixin, ListView):
         ctx["sent_connection_ids"] = set(
             self.my_company.sent_connections.values_list("to_company_id", flat=True)
         )
+        # % de compatibilidad (matching) de cada empresa listada.
+        from apps.matching.selectors import match_scores_map
+
+        ctx["match_scores"] = match_scores_map(self.my_company, [c.pk for c in ctx["companies"]])
         return ctx
 
 

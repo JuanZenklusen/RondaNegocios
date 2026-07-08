@@ -1,0 +1,134 @@
+{% extends "app_base.html" %}
+
+{% block title %}Ronda — {{ event.name }}{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">{{ event.name }}</span>
+    <h2 class="fw-bold m-0 text-dark">Ronda de negocios</h2>
+  </div>
+  <a href="{% url 'events:public_detail' event.slug %}" class="btn btn-sm btn-outline-dark rounded-3">
+    <i class="fa-solid fa-arrow-left me-1"></i> Ver evento
+  </a>
+</div>
+
+{% if not time_blocks %}
+  <div class="glass-card p-4 mb-4">
+    <p class="mb-0 text-secondary"><i class="fa-solid fa-circle-info me-2"></i>
+      El organizador todavía no publicó el cronograma de la ronda (bloques horarios).
+      Vas a poder solicitar reuniones cuando esté disponible.
+    </p>
+  </div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Columna izquierda: solicitudes recibidas + solicitar -->
+  <div class="col-12 col-xl-5">
+    <!-- Solicitudes recibidas -->
+    <h5 class="fw-bold mb-3 fs-6"><i class="fa-solid fa-inbox text-primary me-2"></i>Solicitudes recibidas</h5>
+    {% for req in received %}
+      <div class="glass-card p-3 mb-2">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h6 class="fw-bold m-0">{{ req.from_company.display_name }}</h6>
+            <span class="small text-secondary"><i class="fa-regular fa-clock me-1"></i>{{ req.time_block }}</span>
+            {% if req.message %}<p class="small text-secondary mb-0 mt-1">"{{ req.message }}"</p>{% endif %}
+          </div>
+          <div class="d-flex gap-2">
+            <form method="post" action="{% url 'meetings:respond' req.pk %}">
+              {% csrf_token %}<input type="hidden" name="action" value="accept">
+              <button class="btn btn-sm btn-dark-glass py-2"><i class="fa-solid fa-check me-1"></i>Aceptar</button>
+            </form>
+            <form method="post" action="{% url 'meetings:respond' req.pk %}">
+              {% csrf_token %}<input type="hidden" name="action" value="reject">
+              <button class="btn btn-sm btn-outline-danger rounded-3"><i class="fa-solid fa-xmark"></i></button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="small text-secondary">No tenés solicitudes pendientes.</p>
+    {% endfor %}
+
+    <!-- Solicitar reunión -->
+    {% if participants and time_blocks %}
+      <h5 class="fw-bold mb-3 mt-4 fs-6"><i class="fa-solid fa-calendar-plus text-primary me-2"></i>Solicitar reunión</h5>
+      <div class="glass-card p-3">
+        <form method="post" action="{% url 'meetings:request' event.slug %}">
+          {% csrf_token %}
+          <div class="mb-2">
+            <label class="form-label small mb-1">Empresa</label>
+            <select name="to_company" class="form-select" required>
+              <option value="">Elegí una empresa…</option>
+              {% for c in participants %}<option value="{{ c.pk }}">{{ c.display_name }}{% if c.match_score %} — {{ c.match_score }}% match{% endif %}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small mb-1">Horario</label>
+            <select name="time_block" class="form-select" required>
+              <option value="">Elegí un bloque…</option>
+              {% for b in time_blocks %}<option value="{{ b.pk }}">{{ b }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small mb-1">Mensaje (opcional)</label>
+            <input type="text" name="message" class="form-control" maxlength="280" placeholder="Nos gustaría conversar sobre…">
+          </div>
+          <button type="submit" class="btn btn-dark-glass w-100 py-2">
+            <i class="fa-solid fa-paper-plane me-1"></i> Enviar solicitud
+          </button>
+        </form>
+      </div>
+    {% endif %}
+
+    <!-- Enviadas -->
+    {% if sent %}
+      <h6 class="fw-bold mt-4 mb-2 small text-uppercase text-secondary">Solicitudes enviadas</h6>
+      {% for req in sent %}
+        <div class="glass-card p-2 px-3 mb-2 d-flex justify-content-between align-items-center">
+          <div class="small">
+            <span class="fw-semibold">{{ req.to_company.display_name }}</span>
+            <span class="text-secondary d-block" style="font-size: 0.75rem;">{{ req.time_block }}</span>
+          </div>
+          {% if req.status == 'accepted' %}<span class="badge bg-success bg-opacity-25 text-success">Aceptada</span>
+          {% elif req.status == 'rejected' %}<span class="badge bg-danger bg-opacity-25 text-danger">Rechazada</span>
+          {% elif req.status == 'cancelled' %}<span class="badge bg-secondary bg-opacity-25 text-secondary">Cancelada</span>
+          {% else %}<span class="badge bg-warning bg-opacity-25 text-warning">Pendiente</span>{% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Columna derecha: mi agenda -->
+  <div class="col-12 col-xl-7">
+    <h5 class="fw-bold mb-3 fs-6"><i class="fa-regular fa-calendar-days text-primary me-2"></i>Mi agenda</h5>
+    <div class="glass-card p-3">
+      {% for item in agenda %}
+        {% if item.meeting %}
+          <div class="agenda-row confirmed p-3 mb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <span class="badge bg-success bg-opacity-25 text-success badge-status mb-1">Confirmada</span>
+              <h6 class="fw-bold m-0 text-dark">{{ item.block }} · <span class="text-primary">Mesa {{ item.meeting.table.number }}</span></h6>
+              <span class="small text-secondary">Con: <strong>{{ item.other.display_name }}</strong></span>
+            </div>
+            <form method="post" action="{% url 'meetings:cancel' item.meeting.pk %}"
+                  data-confirm="Se va a cancelar esta reunión y se liberará la mesa y el horario."
+                  data-confirm-text="Sí, cancelar reunión">
+              {% csrf_token %}
+              <button class="btn btn-sm text-danger border-0"><i class="fa-solid fa-trash"></i></button>
+            </form>
+          </div>
+        {% else %}
+          <div class="agenda-row p-3 mb-2 d-flex justify-content-between align-items-center">
+            <span class="small text-secondary">{{ item.block }}</span>
+            <span class="badge bg-secondary bg-opacity-10 text-secondary">Libre</span>
+          </div>
+        {% endif %}
+      {% empty %}
+        <p class="small text-secondary m-0">Todavía no hay bloques horarios en la ronda.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

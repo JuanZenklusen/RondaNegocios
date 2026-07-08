@@ -39,6 +39,8 @@
           </div>
           <div class="d-flex gap-2">
             <a href="{% url 'events:public_detail' event.slug %}" target="_blank" class="btn btn-sm btn-outline-dark rounded-3" title="Ver público"><i class="fa-solid fa-eye"></i></a>
+            <a href="{% url 'registrations:event_registrations' event.pk %}" class="btn btn-sm btn-outline-dark rounded-3" title="Inscripciones"><i class="fa-solid fa-user-group"></i></a>
+            <a href="{% url 'accreditation:event_accreditations' event.pk %}" class="btn btn-sm btn-outline-dark rounded-3" title="Acreditaciones"><i class="fa-solid fa-qrcode"></i></a>
             <a href="{% url 'events:update' event.pk %}" class="btn btn-sm btn-dark-glass py-2"><i class="fa-solid fa-pen me-1"></i>Editar</a>
             <a href="{% url 'events:delete' event.pk %}" class="btn btn-sm btn-outline-danger rounded-3"><i class="fa-solid fa-trash"></i></a>
           </div>

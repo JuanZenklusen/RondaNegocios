@@ -46,41 +46,44 @@
 </div>
 
 <div class="row g-4">
-  <!-- Sugerencias -->
+  <!-- Sugerencias (motor de matching) -->
   <div class="col-12 col-xl-6">
     <h4 class="fw-bold mb-3 fs-5"><i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i>Sugerencias</h4>
-    <div class="glass-card p-3 mb-3">
-      <div class="d-flex gap-3 align-items-start">
-        <div class="feature-icon flex-shrink-0"><i class="fa-solid fa-industry"></i></div>
-        <div class="flex-grow-1" style="min-width: 0;">
-          <div class="d-flex justify-content-between align-items-center gap-2">
-            <h6 class="fw-bold m-0 text-truncate">Logística Global del Norte S.A.</h6>
-            <span class="badge badge-glass-match flex-shrink-0"><i class="fa-solid fa-fire me-1"></i>94%</span>
+    {% if suggestions %}
+      {% for s in suggestions %}
+        <div class="glass-card p-3 mb-3">
+          <div class="d-flex gap-3 align-items-start">
+            <div class="feature-icon flex-shrink-0"><i class="fa-solid fa-industry"></i></div>
+            <div class="flex-grow-1" style="min-width: 0;">
+              <div class="d-flex justify-content-between align-items-center gap-2">
+                <h6 class="fw-bold m-0 text-truncate">{{ s.company.display_name }}</h6>
+                <span class="badge badge-glass-match flex-shrink-0"><i class="fa-solid fa-fire me-1"></i>{{ s.score }}%</span>
+              </div>
+              {% if s.company.rubro %}<span class="text-muted small">{{ s.company.rubro.name }}</span>{% endif %}
+              {% with need=s.company.needs.first %}
+                {% if need %}<p class="small my-2 text-secondary"><strong>Busca:</strong> {{ need.description }}</p>{% endif %}
+              {% endwith %}
+              <a href="{% url 'companies:public_detail' s.company.slug %}" target="_blank"
+                 class="btn btn-sm btn-dark-glass w-100 py-2">
+                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver perfil
+              </a>
+            </div>
           </div>
-          <span class="text-muted small">Transporte &amp; Almacenamiento</span>
-          <p class="small my-2 text-secondary"><strong>Busca:</strong> Software para automatizar ruteos y CRM logístico.</p>
-          <button class="btn btn-sm btn-dark-glass w-100 py-2" onclick="solicitarEntrevista(this, 'Logística Global del Norte S.A.')">
-            <i class="fa-solid fa-calendar-plus me-1"></i> Solicitar Entrevista
-          </button>
         </div>
+      {% endfor %}
+    {% elif request.user.is_company %}
+      <div class="glass-card p-4 text-center">
+        <div class="feature-icon mx-auto mb-2"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <p class="small text-secondary mb-0">
+          Todavía no hay sugerencias. Completá tu perfil (productos, servicios y
+          necesidades) para que el motor de matching te recomiende empresas.
+        </p>
       </div>
-    </div>
-    <div class="glass-card p-3">
-      <div class="d-flex gap-3 align-items-start">
-        <div class="feature-icon flex-shrink-0" style="background: rgba(16,185,129,0.1); color: var(--success);"><i class="fa-solid fa-leaf"></i></div>
-        <div class="flex-grow-1" style="min-width: 0;">
-          <div class="d-flex justify-content-between align-items-center gap-2">
-            <h6 class="fw-bold m-0 text-truncate">BioEmpaques Sustentables</h6>
-            <span class="badge badge-glass-match flex-shrink-0"><i class="fa-solid fa-fire me-1"></i>88%</span>
-          </div>
-          <span class="text-muted small">Packaging Industrial</span>
-          <p class="small my-2 text-secondary"><strong>Busca:</strong> Consultoría de transformación digital B2B.</p>
-          <button class="btn btn-sm btn-dark-glass w-100 py-2" onclick="solicitarEntrevista(this, 'BioEmpaques Sustentables')">
-            <i class="fa-solid fa-calendar-plus me-1"></i> Solicitar Entrevista
-          </button>
-        </div>
+    {% else %}
+      <div class="glass-card p-4 text-center">
+        <p class="small text-secondary mb-0">Las sugerencias de matching son para cuentas de empresa.</p>
       </div>
-    </div>
+    {% endif %}
   </div>
 
   <!-- Agenda -->
@@ -106,27 +109,4 @@
     </div>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-  function solicitarEntrevista(button, empresa) {
-    Swal.fire({
-      title: '¿Solicitar entrevista?',
-      text: 'Se enviará una solicitud de reunión a ' + empresa + '.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, solicitar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#0f172a',
-    }).then((result) => {
-      if (!result.isConfirmed) return;
-      button.disabled = true;
-      button.className = 'btn btn-sm btn-outline-secondary w-100 py-2';
-      button.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Solicitud enviada';
-      Swal.fire({ toast: true, position: 'top-end', icon: 'success',
-        title: 'Solicitud enviada a ' + empresa, showConfirmButton: false, timer: 3000 });
-    });
-  }
-</script>
 {% endblock %}

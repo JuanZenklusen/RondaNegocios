@@ -16,6 +16,11 @@ urlpatterns = [
         views.OrganizerEventDeleteView.as_view(),
         name="delete",
     ),
+    path(
+        "gestion/eventos/<int:pk>/generar-cronograma/",
+        views.GenerateScheduleView.as_view(),
+        name="generate_schedule",
+    ),
     # Público
     path("eventos/", views.PublicEventListView.as_view(), name="public_list"),
     path("eventos/<slug:slug>/", views.PublicEventDetailView.as_view(), name="public_detail"),

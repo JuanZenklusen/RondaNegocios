@@ -1,7 +1,7 @@
 # Manual de usuario — RondaNegocios
 
 Guía de uso de la plataforma. Se va actualizando a medida que se agregan
-funcionalidades. Última actualización: hasta la **Fase 5 (gestión de eventos)**.
+funcionalidades. Última actualización: hasta la **Fase 12 (mensajería y avisos)**.
 
 ---
 
@@ -88,6 +88,16 @@ En **"Conexiones"** ves:
 > Por ahora, conectar registra el vínculo comercial pero **no comparte datos de
 > contacto**. Eso puede cambiar más adelante.
 
+### Sugerencias inteligentes (matching)
+La plataforma calcula un **% de compatibilidad** entre empresas: es alto cuando lo
+que una **ofrece** (productos/servicios) coincide con lo que la otra **busca**
+(necesidades), y suma puntos por compartir rubro y provincia.
+
+- En tu **Dashboard** ves las **empresas sugeridas** con mayor compatibilidad.
+- En la **Red de empresas** y en la **ronda**, cada empresa muestra su **% match**.
+- Completá bien tus **productos, servicios y necesidades**: cuanto más detallado tu
+  perfil, mejores serán las sugerencias (se recalculan cada vez que lo guardás).
+
 ---
 
 ## 6. Eventos
@@ -97,10 +107,25 @@ En **"Conexiones"** ves:
 - Cada evento muestra su **programa**: charlas, exposiciones, reuniones públicas
   y la ronda de negocios. Las actividades marcadas **"Abierta al público"** son
   para asistentes; las de **"Solo empresas"** son parte de la ronda.
-- Con **"Inscribirme"** te anotás al evento.
 
-> ⚠️ **Pagos**: la inscripción con pago todavía está **simulada** (aparece un
-> aviso). La integración real con Mercado Pago se hace en una etapa posterior.
+### Inscribirse a un evento
+1. En el detalle del evento, tocá **"Inscribirme"**.
+2. Si el evento es **gratis**, confirmás y quedás inscripto.
+3. Si tiene **costo**, se muestra un paso de pago (**simulado** por ahora) y luego
+   quedás inscripto.
+4. Si el organizador configuró **aprobación manual**, tu inscripción queda
+   **pendiente** hasta que la apruebe.
+
+Tus inscripciones las ves en **"Mis inscripciones"** (podés cancelarlas desde ahí).
+Si el evento tiene **cupo** y se agota, no vas a poder inscribirte.
+
+> ⚠️ **Pagos**: el pago todavía está **simulado** (no se cobra de verdad). La
+> integración real con Mercado Pago se hace en una etapa posterior.
+
+### Gestionar inscripciones (organizador)
+Desde **"Gestión de eventos"**, el ícono de participantes de cada evento te lleva
+a la lista de inscriptos, donde ves el cupo ocupado y podés **aprobar o rechazar**
+las inscripciones pendientes.
 
 ### Organizar eventos (rol Organización)
 Desde **"Gestión de eventos"** (solo visible para organizadores):
@@ -114,14 +139,111 @@ Desde **"Gestión de eventos"** (solo visible para organizadores):
    - *Finalizado* / *Cancelado*.
 3. **Programa / Actividades**: agregás las charlas, exposiciones, etc., cada una
    con su horario, sala y si es abierta al público.
-4. **Configuración de la ronda**: duración de cada reunión, reuniones por empresa
-   y cantidad de mesas (se usa para la agenda, más adelante).
+4. **Configuración de la ronda**: duración de cada reunión, reuniones por empresa,
+   cantidad de mesas y horarios de la ronda (ver sección 7).
 
 Podés **editar** o **eliminar** un evento desde el listado de gestión.
 
 ---
 
-## 7. Preguntas frecuentes
+## 7. Ronda de reuniones (agenda B2B)
+
+Para las **rondas de negocios**, las empresas con inscripción **confirmada**
+pueden agendar reuniones entre sí.
+
+### Como organizador: preparar la ronda
+1. Al editar el evento, definí la **duración de cada reunión**, la **cantidad de
+   mesas** y los **horarios de la ronda** (hora de inicio y fin).
+2. Tocá **"Generar cronograma"**: el sistema crea las **mesas** y los **bloques
+   horarios** automáticamente (por ejemplo, de 9:00 a 12:00 en tramos de 30 min).
+
+### Como empresa: agendar reuniones
+1. Desde **"Mis inscripciones"**, en un evento de ronda confirmado, tocá
+   **"Ir a la ronda"**.
+2. En **"Solicitar reunión"** elegí una empresa participante y un **horario**
+   libre, y enviá la solicitud.
+3. La otra empresa la ve en **"Solicitudes recibidas"** y puede **aceptar** o
+   **rechazar**.
+4. Al aceptar, la reunión queda **confirmada** con una **mesa asignada
+   automáticamente** y aparece en la agenda de ambas empresas.
+
+El sistema **evita conflictos**: no vas a tener dos reuniones en el mismo horario,
+ni se asignará una mesa ya ocupada en ese bloque. Podés **cancelar** una reunión
+desde tu agenda (libera la mesa y el horario).
+
+> Las reuniones se coordinan **dentro de la franja horaria de la actividad
+> "Ronda de negocios (mesas)"** del programa. El organizador la genera con el botón
+> "Generar cronograma".
+
+---
+
+## 8. Mi agenda del evento
+
+Cada inscripto (empresa o asistente) tiene una **agenda personal** por evento, a la
+que llega desde **"Mis inscripciones" → "Mi agenda"**.
+
+- Ves el **programa completo** del evento, día por día (los eventos pueden durar
+  varias jornadas).
+- En cada actividad (charla, exposición, etc.) tocás **"Agregar a mi agenda"** o
+  **"Quitar de mi agenda"**. Tu agenda se **autocompleta** con lo que elegís.
+- Las actividades marcadas **"Abierta al público"** las puede sumar cualquier
+  inscripto; las de **"Solo empresas"** (como la ronda de mesas) son para empresas.
+- Si sos empresa, en la actividad **"Ronda de negocios (mesas)"** tenés el botón
+  **"Coordinar reuniones"** que te lleva a la ronda; las reuniones que confirmes
+  aparecen **automáticamente** en tu agenda, con su **mesa** y horario.
+
+Así, tu cronograma final combina en un solo lugar las actividades que elegiste y
+tus reuniones confirmadas, en orden por día y hora.
+
+---
+
+## 9. Credenciales y acreditación (QR)
+
+Todos los inscriptos confirmados tienen una **credencial digital con código QR**
+para acceder al evento. Se ven desde **"Credenciales"** en el menú.
+
+### Empresas
+- Cargá tus **representantes** (nombre, apellido, cargo, email, teléfono).
+- Para cada evento confirmado, **acreditá** a los representantes que van a asistir:
+  cada uno obtiene su **credencial con QR** propia. La empresa titular también tiene
+  la suya.
+
+### Asistentes
+- Al confirmar tu inscripción, se genera automáticamente tu **credencial con QR**.
+
+### En el acceso al evento (organizador)
+- El organizador **escanea el QR** de cada credencial (o entra desde "Acreditaciones"
+  del evento) y registra el **ingreso** y, si corresponde, el **egreso**.
+- En **"Gestión de eventos" → ícono QR** ve la lista de acreditaciones con su estado
+  (pendiente / ingresó / egresó).
+
+> Mostrá tu credencial (el QR) desde el celular en el acceso; no hace falta imprimir.
+
+---
+
+## 10. Notificaciones y mensajes
+
+### Notificaciones (la campanita 🔔)
+Arriba a la derecha, la **campanita** te avisa de la actividad importante:
+- Nuevas **solicitudes de reunión** y **reuniones confirmadas**.
+- Nuevas **solicitudes de conexión**.
+- **Inscripciones aprobadas** por el organizador.
+- Nuevos **mensajes**.
+
+El número rojo indica cuántas no leíste. Al tocar una notificación te lleva a la
+sección correspondiente. Algunas (como una reunión confirmada o una inscripción
+aprobada) también te llegan por **email**.
+
+### Mensajes (el sobre ✉️)
+Podés **escribirle a otra empresa** directamente:
+- Desde el **directorio** ("Red de empresas"), con el ícono de mensaje de cada
+  empresa.
+- El sobre en la barra superior te lleva a tu **bandeja de mensajes**, con todas
+  tus conversaciones y las no leídas.
+
+---
+
+## 11. Preguntas frecuentes
 
 **¿Puedo entrar como empresa y como asistente con el mismo correo?**
 No, cada correo es una sola cuenta. Usá correos distintos si necesitás ambos roles.

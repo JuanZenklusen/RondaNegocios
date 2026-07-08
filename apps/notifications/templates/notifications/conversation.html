@@ -1,0 +1,37 @@
+{% extends "app_base.html" %}
+
+{% block title %}Conversación — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="avatar-circle bg-dark text-white rounded-circle fw-bold">
+      {{ other.first_name|first|default:other.email|first|upper }}
+    </div>
+    <h4 class="fw-bold m-0">{{ other.get_full_name|default:other.email }}</h4>
+  </div>
+  <a href="{% url 'notifications:inbox' %}" class="btn btn-sm btn-outline-dark rounded-3">
+    <i class="fa-solid fa-arrow-left me-1"></i> Mensajes
+  </a>
+</div>
+
+<div class="glass-card p-3 p-md-4 mb-3" style="max-height: 55vh; overflow-y: auto;">
+  {% for m in messages_list %}
+    <div class="d-flex mb-2 {% if m.sender == request.user %}justify-content-end{% endif %}">
+      <div class="p-2 px-3 rounded-4 {% if m.sender == request.user %}premium-blue-card{% else %}bg-white bg-opacity-50 border{% endif %}"
+           style="max-width: 75%;">
+        <div class="small">{{ m.body|linebreaksbr }}</div>
+        <div class="text-end" style="font-size: 0.65rem; opacity: 0.7;">{{ m.created_at|date:"d/m H:i" }}</div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="small text-secondary text-center m-0">Todavía no hay mensajes. ¡Escribí el primero!</p>
+  {% endfor %}
+</div>
+
+<form method="post" action="{% url 'notifications:send' other.pk %}" class="d-flex gap-2">
+  {% csrf_token %}
+  <input type="text" name="body" class="form-control" placeholder="Escribí un mensaje…" autocomplete="off" required>
+  <button class="btn btn-dark-glass px-3"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+{% endblock %}

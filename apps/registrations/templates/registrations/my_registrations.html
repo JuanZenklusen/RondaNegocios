@@ -1,0 +1,66 @@
+{% extends "app_base.html" %}
+
+{% block title %}Mis inscripciones — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="mb-4">
+  <span class="text-secondary small fw-medium">Mis eventos</span>
+  <h2 class="fw-bold m-0 text-dark">Mis inscripciones</h2>
+</div>
+
+{% if registrations %}
+  <div class="row g-3">
+    {% for reg in registrations %}
+      <div class="col-12">
+        <div class="glass-card p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h6 class="fw-bold m-0">{{ reg.event.name }}</h6>
+              {% if reg.status == 'confirmed' %}
+                <span class="badge bg-success bg-opacity-25 text-success">Confirmada</span>
+              {% elif reg.status == 'pending' %}
+                <span class="badge bg-warning bg-opacity-25 text-warning">Pendiente</span>
+              {% elif reg.status == 'rejected' %}
+                <span class="badge bg-danger bg-opacity-25 text-danger">Rechazada</span>
+              {% endif %}
+              {% if reg.payment_status == 'simulated' %}
+                <span class="badge bg-dark text-white">Pago simulado ${{ reg.amount }}</span>
+              {% elif reg.payment_status == 'not_required' %}
+                <span class="badge badge-glass-match">Entrada libre</span>
+              {% endif %}
+            </div>
+            <div class="small text-secondary mt-1">
+              <i class="fa-regular fa-calendar me-1"></i>{{ reg.event.start_date|date:"d/m/Y" }}
+              {% if reg.event.location %}<span class="ms-2"><i class="fa-solid fa-location-dot me-1"></i>{{ reg.event.location }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            {% if reg.status == 'confirmed' %}
+              <a href="{% url 'agenda:event_agenda' reg.event.slug %}" class="btn btn-sm btn-dark-glass py-2"><i class="fa-regular fa-calendar-check me-1"></i>Mi agenda</a>
+            {% endif %}
+            {% if reg.status == 'confirmed' and reg.event.event_type == 'business_round' and request.user.is_company %}
+              <a href="{% url 'meetings:round' reg.event.slug %}" class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-solid fa-handshake me-1"></i>Ronda</a>
+            {% endif %}
+            <a href="{% url 'events:public_detail' reg.event.slug %}" class="btn btn-sm btn-outline-dark rounded-3">Ver evento</a>
+            {% if reg.is_active %}
+              <form method="post" action="{% url 'registrations:cancel' reg.pk %}"
+                    data-confirm="Se va a cancelar tu inscripción a este evento."
+                    data-confirm-text="Sí, cancelar inscripción">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-danger rounded-3"><i class="fa-solid fa-xmark me-1"></i>Cancelar</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="glass-card p-5 text-center">
+    <div class="feature-icon mx-auto mb-3"><i class="fa-solid fa-ticket"></i></div>
+    <h6 class="fw-bold">Todavía no te inscribiste a ningún evento</h6>
+    <p class="small text-secondary mb-3">Explorá los próximos eventos y sumate.</p>
+    <a href="{% url 'events:public_list' %}" class="btn btn-dark-glass px-4 py-2">Ver eventos</a>
+  </div>
+{% endif %}
+{% endblock %}

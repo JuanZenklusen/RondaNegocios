@@ -1,6 +1,7 @@
+{% load core_extras %}
 {% comment %}
   Card de empresa para el directorio/favoritos.
-  Espera: company, favorite_ids (set), sent_connection_ids (set).
+  Espera: company, favorite_ids (set), sent_connection_ids (set), match_scores (dict opcional).
 {% endcomment %}
 <div class="col-12 col-md-6 col-xl-4">
   <div class="glass-card p-3 h-100 d-flex flex-column">
@@ -25,6 +26,9 @@
         {% if company.rubro %}
           <span class="badge badge-glass-match">{{ company.rubro.name }}</span>
         {% endif %}
+        {% with score=match_scores|dict_get:company.pk %}
+          {% if score %}<span class="badge badge-glass-match"><i class="fa-solid fa-fire me-1"></i>{{ score }}% match</span>{% endif %}
+        {% endwith %}
         {% if company.city or company.province %}
           <div class="small text-secondary mt-1">
             <i class="fa-solid fa-location-dot me-1"></i>{{ company.city }}{% if company.city and company.province %}, {% endif %}{{ company.province }}
@@ -42,6 +46,8 @@
     <div class="mt-auto d-flex gap-2">
       <a href="{% url 'companies:public_detail' company.slug %}" target="_blank"
          class="btn btn-sm btn-outline-dark rounded-3 flex-grow-1">Ver perfil</a>
+      <a href="{% url 'notifications:conversation' company.user_id %}"
+         class="btn btn-sm btn-outline-dark rounded-3" title="Enviar mensaje"><i class="fa-regular fa-comment"></i></a>
       <button type="button" class="btn btn-sm btn-dark-glass flex-grow-1 py-2 connect-btn"
               data-id="{{ company.pk }}" data-name="{{ company.display_name }}"
               {% if company.pk in sent_connection_ids %}disabled{% endif %}>

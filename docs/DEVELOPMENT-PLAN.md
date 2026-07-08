@@ -108,13 +108,20 @@ Convenciones y sistema de diseño: ver `CLAUDE.md`. Spec funcional: `Idea-de-pro
   pública según estado/is_public, permisos por rol). Falta eyeball visual.
 - Nota: generación automática de mesas/bloques y la agenda se harán en la Fase 8.
 
-## Fase 6 — Inscripciones
+## Fase 6 — Inscripciones ✅
 
-- [ ] App `registrations`: modelo `Registration`
-- [ ] Inscripción online de empresa a un evento
-- [ ] Gestión de cupos, estados (pendiente/validada/rechazada)
-- [ ] Validación automática y manual
-- **Validación**: inscribir una empresa, agotar cupo, aprobar/rechazar.
+- [x] App `registrations`: modelo `Registration` (event+user, estados, pago)
+- [x] Inscripción online de **empresa y asistente** a un evento (desde el detalle
+      público, botón real → POST)
+- [x] Gestión de **cupos** (`Event.capacity`/`taken_slots`/`is_full`) y estados
+      (pendiente/confirmada/rechazada/cancelada)
+- [x] **Validación automática** (confirma al toque) o **manual** (queda pendiente
+      si `Event.requires_approval`), con aprobar/rechazar del organizador
+- [x] **Pago simulado**: eventos pagos marcan `payment=simulated` (sin pasarela real)
+- [x] Página "Mis inscripciones" (cancelar) + gestión de inscripciones por evento
+- [x] 16 tests nuevos — 74 en total; seed con inscripciones de demo
+- **Validación**: hecha vía test client (gratis/pago/aprobación/cupo/cancelar,
+  permisos). Falta eyeball visual.
 
 ## Fase 7 — Pagos (Mercado Pago) + Planes
 
@@ -126,50 +133,95 @@ Convenciones y sistema de diseño: ver `CLAUDE.md`. Spec funcional: `Idea-de-pro
 - **Validación**: pago de prueba con credenciales sandbox de MP, confirmar que la
   inscripción queda automática al aprobarse.
 
-## Fase 8 — Solicitudes de reunión y agenda
+## Fase 8 — Solicitudes de reunión y agenda ✅
 
-- [ ] App `meetings`: modelos `MeetingRequest`, `Meeting`
-- [ ] Empresa A solicita reunión a B en un horario → reserva en agenda de ambos
-- [ ] B acepta → confirmada, se asigna mesa + bloque horario; rechazar / reprogramar
+- [x] Generación de cronograma (mesas + bloques) desde config de la ronda
+      (`events.services.generate_event_schedule`; pendiente de Fase 5) + horarios
+      de ronda en `Event`
+- [x] App `meetings`: modelos `MeetingRequest`, `Meeting`
+- [x] Empresa A solicita reunión a B en un bloque → queda pendiente en ambas
+- [x] B acepta → **Meeting confirmada con mesa asignada automáticamente**; rechazar
       / cancelar
-- [ ] Agenda por empresa (vista de slots confirmados/pendientes, estilo del modelo)
-- [ ] Evitar conflictos (misma empresa/mesa/bloque no se solapan)
-- **Validación**: flujo completo A→B con dos empresas de prueba, ver la agenda
-  actualizarse y la mesa asignada; tests de no-solapamiento.
+- [x] Agenda por empresa (bloques con reunión confirmada/libre) + solicitudes
+      recibidas/enviadas (`selectors.py`)
+- [x] **Anti-solapamiento**: una empresa no tiene 2 reuniones en el mismo bloque;
+      una mesa no se reasigna en el mismo bloque; no hay reunión duplicada por pareja
+- [x] Acceso a la ronda solo con inscripción confirmada; 16 tests nuevos — 88 en total
+- **Validación**: flujo completo A→B validado vía test client (solicitar→aceptar→
+      agenda con mesa) + tests de conflictos y de agotamiento de mesas. Seed con
+      cronograma + reunión de ejemplo. Falta eyeball visual.
+- Nota: la **generación automática/optimizada** de agenda es la Fase 10.
 
-## Fase 9 — Motor de matching inteligente
+## Fase 9 — Motor de matching inteligente ✅
 
-- [ ] Algoritmo de scoring: productos/servicios ofrecidos vs necesidades, rubro,
-      ubicación, intereses → `Match` con `score`
-- [ ] Ranking de compatibilidad y sugerencias de reunión (badge de % match)
-- [ ] Recalcular al cambiar perfiles/necesidades
-- **Validación**: con empresas de prueba complementarias, ver que aparecen como
-  sugerencias con score coherente; tests del cálculo de score.
+- [x] App `matching`: modelo `Match` (par único, `score` 0-100, `details` JSON)
+- [x] Algoritmo de scoring (`scoring.py`): complementariedad oferta↔necesidad
+      (70%) + rubro (15%) + provincia (15%), con tokenización y stopwords
+- [x] Recálculo: `services.recompute_company_matches` (al guardar perfil) y
+      `recompute_all` + management command `recompute_matches`
+- [x] Ranking y sugerencias: `selectors.top_matches_for` / `match_scores_map`
+- [x] Integración UI: **sugerencias en el dashboard**, **badge de % match** en el
+      directorio y en la ronda (participantes ordenados por compatibilidad)
+- [x] 11 tests nuevos — 95 en total; seed recalcula matches (par MetalParaná ↔
+      Logística Andina = 35%)
+- **Validación**: tests del scoring (complementarias→alto, no relacionadas→0, bonus
+  rubro/provincia) + funcional del dashboard/directorio. Falta eyeball visual.
 
-## Fase 10 — Agenda inteligente (generación automática)
+## Fase 10 — Agenda personal del inscripto ✅
 
-- [ ] Generación automática de agenda optimizada (disponibilidad, compatibilidades,
-      mesas y bloques libres, duración configurable)
-- [ ] Objetivos: maximizar reuniones, evitar conflictos, optimizar recursos
-- **Validación**: generar una agenda para un evento con varias empresas y verificar
-  que no hay conflictos y se maximizan los encuentros.
+> Reformulada según pedido del usuario: cada inscripto elige a qué partes del
+> evento asiste y la agenda se autocompleta (además de sus reuniones de la ronda).
 
-## Fase 11 — Participantes y acreditaciones
+- [x] App `agenda`: modelo `ActivityAttendance` (asistencia por usuario+actividad)
+- [x] **Programa multi-día**: actividades agrupadas por día (`selectors.program_by_day`)
+- [x] Elegir asistencia a cada actividad (toggle) con validaciones (inscripción
+      confirmada; asistentes solo actividades públicas)
+- [x] **Agenda autocompletada** (`selectors.personal_agenda`): combina actividades
+      elegidas + reuniones confirmadas, cronológica por día/hora
+- [x] Las reuniones de la ronda se coordinan **dentro de la franja de la actividad
+      "Ronda de negocios"**: `generate_event_schedule` deriva los `TimeBlock` de la
+      ventana de esa actividad (con fallback a `round_start_time`/`round_end_time`)
+- [x] Link "Mi agenda" desde "Mis inscripciones"; botón "Coordinar reuniones" en la
+      actividad de ronda
+- [x] 10 tests nuevos — 105 en total; seed con programa de 2 días y asistencias demo
+- **Validación**: flujo end-to-end (programa multi-día, toggle, agenda con reunión y
+      mesa, permisos de asistente) + test de bloques dentro de la franja de la ronda.
+- Nota: la generación **optimizada/automática** de reuniones (maximizar encuentros)
+  queda como mejora futura; hoy la agenda se arma con elección manual + matching.
 
-- [ ] App `accreditation`: modelos `Participant`, `Accreditation`
-- [ ] Empresa crea representantes/participantes
-- [ ] Generación automática de credenciales con **QR** e info
-- [ ] Check-in / check-out y control de asistencia
-- **Validación**: generar credencial con QR, simular check-in.
+## Fase 11 — Participantes y acreditaciones ✅
 
-## Fase 12 — Mensajería y notificaciones
+- [x] App `accreditation`: modelos `Participant` (representantes de empresa) y
+      `Accreditation` (credencial con `code`, check-in/out)
+- [x] Empresa crea representantes y los **acredita** por evento; asistente obtiene
+      su credencial propia (self) automáticamente
+- [x] **Credencial digital con QR** (generado con `qrcode` como PNG on-the-fly;
+      el QR apunta a la URL de check-in del organizador)
+- [x] Check-in / check-out: el organizador escanea el QR → registra
+      ingreso/egreso; lista de acreditaciones por evento con estado
+- [x] Sidebar "Credenciales", link de acreditaciones en gestión de eventos
+- [x] 11 tests nuevos — 116 en total; seed con representantes y credenciales
+- **Validación**: flujo end-to-end (empresa acredita representante → credencial con
+      QR PNG → organizador check-in) + permisos (QR oculto a extraños, empresa no
+      hace check-in). Falta eyeball visual.
 
-- [ ] App `notifications`: notificaciones internas + email
-- [ ] Eventos que disparan notificación: nuevo match, reunión aprobada, cambio de
-      agenda, pago confirmado
-- [ ] Mensajería interna (mensajes directos, solicitudes de contacto)
-- **Validación**: disparar cada tipo de notificación y verla en la campanita + email
-  de consola.
+## Fase 12 — Mensajería y notificaciones ✅
+
+- [x] App `notifications`: modelos `Notification` (alerta interna) y `Message`
+      (mensaje directo)
+- [x] `notify(...)` (interna + email opcional) y `send_message(...)` con service/
+      selectors; context processor para los contadores de la navbar
+- [x] Disparadores: solicitud de reunión, reunión confirmada (email), solicitud de
+      conexión, inscripción aprobada/rechazada (email)
+- [x] **Campanita** con contador + dropdown de recientes; página de notificaciones
+      (marcar leídas); **sobre** con no leídos
+- [x] Mensajería directa entre empresas: bandeja (inbox), conversación con envío,
+      "Enviar mensaje" desde el directorio
+- [x] 13 tests nuevos — 129 en total
+- **Validación**: end-to-end (mensaje→notificación→campanita→leído) + tests de
+      disparadores (reunión notifica, aprobación notifica + email). Falta eyeball.
+- Nota: "cambio de agenda" y "pago confirmado" se conectarán cuando existan esos
+  disparadores (pagos = Fase 7 pospuesta).
 
 ## Fase 13 — Dashboards y reportes
 

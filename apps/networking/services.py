@@ -30,11 +30,21 @@ def send_connection_request(
     """Crea (o devuelve) una solicitud de conexión de `from_company` a `to_company`."""
     if from_company.pk == to_company.pk:
         raise ValueError("Una empresa no puede conectarse consigo misma.")
-    conn, _ = ConnectionRequest.objects.get_or_create(
+    conn, created = ConnectionRequest.objects.get_or_create(
         from_company=from_company,
         to_company=to_company,
         defaults={"message": message},
     )
+    if created:
+        from django.urls import reverse
+
+        from apps.notifications.services import notify
+
+        notify(
+            recipient=to_company.user,
+            title=f"Nueva solicitud de conexión de {from_company.display_name}",
+            url=reverse("networking:connections"),
+        )
     return conn
 
 

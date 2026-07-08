@@ -54,6 +54,30 @@
   </script>
   {% endif %}
 
+  <!-- Confirmación global con SweetAlert2 para formularios con data-confirm -->
+  <script>
+    document.addEventListener('submit', function (e) {
+      const form = e.target;
+      const message = form.dataset.confirm;
+      if (!message || form.dataset.confirmed === 'yes') return;
+      e.preventDefault();
+      Swal.fire({
+        title: '¿Confirmás?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: form.dataset.confirmText || 'Sí, continuar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0f172a',
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          form.dataset.confirmed = 'yes';
+          form.submit();
+        }
+      });
+    }, true);
+  </script>
+
   {% block extra_js %}{% endblock %}
 </body>
 </html>

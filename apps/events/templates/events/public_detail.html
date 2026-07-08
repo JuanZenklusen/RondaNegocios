@@ -33,12 +33,39 @@
       </div>
       {% if event.description %}<p class="text-secondary">{{ event.description|linebreaksbr }}</p>{% endif %}
 
-      <button type="button" class="btn btn-dark-glass px-4 py-2 mt-2" id="inscribirme"
-              data-free="{% if event.is_free %}1{% else %}0{% endif %}"
-              data-price="{{ event.general_price }}"
-              data-auth="{% if request.user.is_authenticated %}1{% else %}0{% endif %}">
-        <i class="fa-solid fa-ticket me-1"></i> Inscribirme
-      </button>
+      {% if event.capacity %}
+        <p class="small text-secondary mb-2"><i class="fa-solid fa-users me-1"></i>
+          {% if event.is_full %}<span class="text-danger fw-semibold">Cupo agotado</span>
+          {% else %}Lugares disponibles: <strong>{{ event.available_slots }}</strong> de {{ event.capacity }}{% endif %}
+        </p>
+      {% endif %}
+
+      {% if my_registration and my_registration.is_active %}
+        <div class="d-inline-flex align-items-center gap-2 mt-2">
+          {% if my_registration.status == 'confirmed' %}
+            <span class="badge bg-success bg-opacity-25 text-success py-2 px-3"><i class="fa-solid fa-circle-check me-1"></i>Ya estás inscripto</span>
+          {% else %}
+            <span class="badge bg-warning bg-opacity-25 text-warning py-2 px-3"><i class="fa-regular fa-clock me-1"></i>Inscripción pendiente de aprobación</span>
+          {% endif %}
+          <a href="{% url 'registrations:mine' %}" class="btn btn-sm btn-outline-dark rounded-3">Ver mis inscripciones</a>
+        </div>
+      {% elif event.is_full %}
+        <button type="button" class="btn btn-secondary px-4 py-2 mt-2" disabled>
+          <i class="fa-solid fa-ban me-1"></i> Cupo agotado
+        </button>
+      {% else %}
+        {# Formulario real de inscripción; el pago sigue SIMULADO (fase futura). #}
+        <form method="post" action="{% url 'registrations:register' event.pk %}" id="registration-form">
+          {% csrf_token %}
+        </form>
+        <button type="button" class="btn btn-dark-glass px-4 py-2 mt-2" id="inscribirme"
+                data-free="{% if event.is_free %}1{% else %}0{% endif %}"
+                data-price="{{ event.general_price }}"
+                data-auth="{% if request.user.is_authenticated %}1{% else %}0{% endif %}"
+                data-approval="{% if event.requires_approval %}1{% else %}0{% endif %}">
+          <i class="fa-solid fa-ticket me-1"></i> Inscribirme
+        </button>
+      {% endif %}
     </div>
   </div>
 
@@ -73,60 +100,57 @@
 
 {% block extra_js %}
 <script>
-  // Inscripción PROVISORIA: el pago real (Mercado Pago) se integra en una fase
-  // posterior. Por ahora se simula con SweetAlert.
-  document.getElementById('inscribirme').addEventListener('click', function () {
-    const btn = this;
-    const isAuth = btn.dataset.auth === '1';
-    const isFree = btn.dataset.free === '1';
-    const price = btn.dataset.price;
+  // La inscripción se registra de verdad (POST). El PAGO sigue SIMULADO: los
+  // eventos pagos muestran un paso de "pago simulado" antes de confirmar (la
+  // integración real con Mercado Pago es una fase posterior).
+  const btn = document.getElementById('inscribirme');
+  if (btn) {
+    btn.addEventListener('click', function () {
+      const isAuth = btn.dataset.auth === '1';
+      const isFree = btn.dataset.free === '1';
+      const needsApproval = btn.dataset.approval === '1';
+      const price = btn.dataset.price;
+      const form = document.getElementById('registration-form');
 
-    if (!isAuth) {
-      Swal.fire({
-        title: 'Necesitás una cuenta',
-        text: 'Ingresá o registrate como asistente para inscribirte al evento.',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Ingresar',
-        cancelButtonText: 'Registrarme',
-        confirmButtonColor: '#0f172a',
-      }).then((r) => {
-        window.location.href = r.isConfirmed ? '{% url "accounts:login" %}' : '{% url "accounts:register_attendee" %}';
-      });
-      return;
-    }
+      if (!isAuth) {
+        Swal.fire({
+          title: 'Necesitás una cuenta',
+          text: 'Ingresá o registrate como asistente para inscribirte al evento.',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Ingresar',
+          cancelButtonText: 'Registrarme',
+          confirmButtonColor: '#0f172a',
+        }).then((r) => {
+          window.location.href = r.isConfirmed ? '{% url "accounts:login" %}' : '{% url "accounts:register_attendee" %}';
+        });
+        return;
+      }
 
-    if (isFree) {
-      Swal.fire({
-        title: '¿Confirmar inscripción?',
-        text: 'Este evento es de entrada libre.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, inscribirme',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#0f172a',
-      }).then((r) => {
-        if (r.isConfirmed) {
-          Swal.fire({ icon: 'success', title: '¡Inscripción registrada! (simulada)',
-            text: 'La inscripción real se habilita en la próxima etapa.', confirmButtonColor: '#0f172a' });
-        }
-      });
-    } else {
-      Swal.fire({
-        title: 'Pago simulado',
-        html: 'El pago con Mercado Pago se integra más adelante.<br>Monto: <strong>$' + price + '</strong>',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Simular pago',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#0f172a',
-      }).then((r) => {
-        if (r.isConfirmed) {
-          Swal.fire({ icon: 'success', title: '¡Pago simulado con éxito!',
-            text: 'Tu inscripción quedaría confirmada (simulado).', confirmButtonColor: '#0f172a' });
-        }
-      });
-    }
-  });
+      const note = needsApproval ? 'Tu inscripción quedará pendiente de aprobación.' : '';
+
+      if (isFree) {
+        Swal.fire({
+          title: '¿Confirmar inscripción?',
+          html: 'Este evento es de entrada libre.' + (note ? '<br>' + note : ''),
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, inscribirme',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#0f172a',
+        }).then((r) => { if (r.isConfirmed) form.submit(); });
+      } else {
+        Swal.fire({
+          title: 'Pago simulado',
+          html: 'El pago con Mercado Pago se integra más adelante.<br>Monto: <strong>$' + price + '</strong>' + (note ? '<br>' + note : ''),
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Simular pago e inscribirme',
+          cancelButtonText: 'Cancelar',
+          confirmButtonColor: '#0f172a',
+        }).then((r) => { if (r.isConfirmed) form.submit(); });
+      }
+    });
+  }
 </script>
 {% endblock %}
