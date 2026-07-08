@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conectia SaaS - Glassmorphism Prototipo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: rgba(31, 38, 135, 0.05);
+            --text-main: #1e293b;
+            --accent-blue: #2563eb;
+            --accent-pink: #d946ef;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Fondo con degradado fluido idéntico a tu imagen de referencia */
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 30%, #a5f3fc 70%, #e0f2fe 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* Contenedor Principal del Dashboard con Efecto Cristal */
+        .glass-dashboard-wrapper {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+            overflow: hidden;
+        }
+
+        /* Barra de Navegación Superior */
+        .glass-navbar {
+            background: rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 25px;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 6px 20px;
+            color: var(--text-main);
+        }
+        .search-box::placeholder { color: #64748b; }
+        .search-box:focus { background: rgba(255, 255, 255, 0.9); box-shadow: none; border-color: var(--accent-blue); }
+
+        /* Menú Lateral (Sidebar) Estilo de la Imagen */
+        .glass-sidebar {
+            background: rgba(255, 255, 255, 0.25);
+            border-right: 1px solid var(--glass-border);
+            min-height: calc(100vh - 120px);
+            padding: 25px 15px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #475569;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+        .sidebar-link i { margin-right: 12px; width: 20px; font-size: 1.1rem; }
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-main);
+        }
+        .sidebar-link.active {
+            background: #0f172a;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
+        }
+
+        /* Tarjetas de Contenido Glassmorphism */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 24px 0 var(--glass-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px 0 rgba(31, 38, 135, 0.12);
+        }
+
+        /* Tarjeta Azul de Presentación Destacada ("My Card" en tu imagen) */
+        .premium-blue-card {
+            background: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+            color: white;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(3, 105, 161, 0.25);
+        }
+
+        /* Badges de Estado e Indicadores */
+        .badge-glass-match {
+            background: rgba(37, 99, 235, 0.15);
+            color: #1e40af;
+            font-weight: 600;
+            border: 1px solid rgba(37, 99, 235, 0.2);
+        }
+        .badge-status {
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+
+        /* Slots de la Agenda */
+        .agenda-row {
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 14px;
+            transition: all 0.2s;
+        }
+        .agenda-row.confirmed { border-left: 6px solid #10b981; }
+        .agenda-row.pending { border-left: 6px solid #f59e0b; }
+
+        /* Simulación de Código QR */
+        .qr-box {
+            width: 100px;
+            height: 100px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 2.5rem;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid max-width-lg my-md-2 px-md-4">
+        <div class="glass-dashboard-wrapper shadow">
+
+            <div class="glass-navbar d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center">
+                    <div class="p-2 bg-dark rounded-3 text-white me-2 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
+                        <i class="fa-solid fa-circle-nodes text-info"></i>
+                    </div>
+                    <span class="fw-bold tracking-tight text-dark fs-5">WEB LOGO</span>
+                </div>
+
+
+                <div class="d-flex align-items-center gap-3">
+                    <!-- <select class="form-select form-select-sm bg-light border-0 rounded-pill px-3" style="width: auto;">
+                        <option>Español</option>
+                        <option>English</option>
+                    </select> -->
+                    <i class="fa-regular fa-envelope fs-5 text-secondary position-relative cursor-pointer">
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="font-size: 0px;"></span>
+                    </i>
+                    <i class="fa-regular fa-bell fs-5 text-secondary cursor-pointer"></i>
+                    <div class="d-flex align-items-center gap-2 border-start ps-3">
+                        <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.85rem;">RD</div>
+                        <div class="d-none d-lg-block" style="line-height: 1.1;">
+                            <span class="fw-semibold small d-block">Robert Downey</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">@robert564</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-0">
+
+                <div class="col-12 col-md-3 col-lg-2 glass-sidebar">
+                    <nav class="nav flex-column">
+                        <a class="sidebar-link active" href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                        <a class="sidebar-link" href="#"><i class="fa-solid fa-handshake"></i> Mis Rondas</a>
+                        <a class="sidebar-link" href="#"><i class="fa-solid fa-building"></i> Perfil Empresa</a>
+                        <a class="sidebar-link" href="#"><i class="fa-solid fa-qrcode"></i> Credenciales</a>
+                        <a class="sidebar-link" href="#"><i class="fa-solid fa-gears"></i> Ajustes</a>
+                    </nav>
+                </div>
+
+                <div class="col-12 col-md-9 col-lg-10 p-4">
+
+                    <div class="mb-4">
+                        <span class="text-secondary small fw-medium">Hola Robert,</span>
+                        <h2 class="fw-bold m-0 text-dark">Vista General del Evento</h2>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+
+                        <div class="col-12 col-lg-6">
+                            <div class="glass-card p-4 h-100">
+                                <span class="text-secondary small fw-semibold text-uppercase">Última Actividad</span>
+                                <p class="small text-muted mt-2 mb-3">Interacciones en las últimas horas</p>
+                                <div class="position-relative w-100 d-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-3" style="height: 70px; border: 1px dashed rgba(255,255,255,0.4);">
+                                    <span class="small text-secondary"><i class="fa-solid fa-chart-line me-1"></i> Motor de Matching Activo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="premium-blue-card p-4 h-100 d-flex flex-column justify-content-between">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="small opacity-75 fw-medium">Credencial Corporativa</span>
+                                        <h5 class="fw-bold m-0 mt-1">TechSolutions SRL</h5>
+                                    </div>
+                                    <i class="fa-solid fa-fingerprint fs-3 opacity-50"></i>
+                                </div>
+                                <div class="mt-4">
+                                    <p class="mb-1 small tracking-widest opacity-75">CUIT: 30-74839201-9</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-semibold">Mesa Asignada: #14</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-lg-3">
+                            <div class="glass-card p-3">
+                                <span class="text-secondary small d-block">Total Solicitudes</span>
+                                <h4 class="fw-bold m-0 mt-1">520 <span class="fs-6 text-success fw-normal">+12%</span></h4>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="glass-card p-3">
+                                <span class="text-secondary small d-block">Reuniones Aceptadas</span>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <h4 class="fw-bold m-0">210</h4>
+                                    <span class="badge bg-primary px-2 py-1"><i class="fa-solid fa-handshake small"></i> 85%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="glass-card p-3">
+                                <span class="text-secondary small d-block">Pendientes de Respuesta</span>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <h4 class="fw-bold m-0">65</h4>
+                                    <span class="badge bg-danger px-2 py-1"><i class="fa-regular fa-clock small"></i> 15%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="glass-card p-3">
+                                <span class="text-secondary small d-block">Asistentes Habilitados</span>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <h4 class="fw-bold m-0">120</h4>
+                                    <span class="bg-warning text-dark rounded-circle px-2 py-1 fw-bold" style="font-size: 0.75rem;"><i class="fa-solid fa-check"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-12 col-xl-6">
+                            <h4 class="fw-bold mb-3 fs-5"><i class="fa-solid fa-wand-magic-sparkles text-primary me-2"></i>Sugerencias </h4>
+
+                            <div class="glass-card p-3 mb-3">
+                                <div class="d-flex gap-3 align-items-start">
+                                    <div class="bg-white bg-opacity-50 p-2 rounded-3 border d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fa-solid fa-industry fs-4 text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="fw-bold m-0">Logística Global del Norte S.A.</h6>
+                                            <span class="badge badge-glass-match"><i class="fa-solid fa-fire me-1"></i> 94% Match</span>
+                                        </div>
+                                        <span class="text-muted small">Transporte & Almacenamiento</span>
+                                        <p class="small my-2 text-secondary"><strong>Busca:</strong> Proveedores de software para automatizar ruteos en la nube y CRM logístico.</p>
+                                        <button class="btn btn-sm btn-dark w-100 rounded-3 mt-1 py-2" onclick="enviarSolicitudGlass(this, 'Logística Global del Norte S.A.')">
+                                            <i class="fa-solid fa-calendar-plus me-1"></i> Solicitar Entrevista en Agenda
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass-card p-3">
+                                <div class="d-flex gap-3 align-items-start">
+                                    <div class="bg-white bg-opacity-50 p-2 rounded-3 border d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                        <i class="fa-solid fa-leaf fs-4 text-success"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="fw-bold m-0">BioEmpaques Sustentables</h6>
+                                            <span class="badge badge-glass-match"><i class="fa-solid fa-fire me-1"></i> 88% Match</span>
+                                        </div>
+                                        <span class="text-muted small">Packaging Industrial</span>
+                                        <p class="small my-2 text-secondary"><strong>Busca:</strong> Consultoría de transformación digital para canales B2B e-commerce.</p>
+                                        <button class="btn btn-sm btn-dark w-100 rounded-3 mt-1 py-2" onclick="enviarSolicitudGlass(this, 'BioEmpaques Sustentables')">
+                                            <i class="fa-solid fa-calendar-plus me-1"></i> Solicitar Entrevista en Agenda
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-xl-6">
+                            <h4 class="fw-bold mb-3 fs-5"><i class="fa-regular fa-calendar-days text-primary me-2"></i>Agenda de Rondas de Negocio</h4>
+                            <div class="glass-card p-3">
+
+                                <div class="p-3 mb-2 agenda-row confirmed d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <span class="badge bg-success bg-opacity-20 text-success badge-status mb-1">Confirmada</span>
+                                        <h6 class="fw-bold m-0 text-dark">09:00 - 09:30 hs | <span class="text-primary fw-bold">Mesa 14</span></h6>
+                                        <span class="small text-secondary">Con: <strong>AgroIndustrias Pampeanas</strong></span>
+                                    </div>
+                                    <span class="small fw-medium text-muted"><i class="fa-solid fa-user-tie me-1"></i> Ing. Gómez</span>
+                                </div>
+
+                                <div class="p-3 mb-2 agenda-row pending d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <div>
+                                        <span class="badge bg-warning bg-opacity-20 text-warning badge-status mb-1">Pendiente de Confirmación</span>
+                                        <h6 class="fw-bold m-0 text-dark">09:45 - 10:15 hs | <span class="text-muted small">Mesa pendiente</span></h6>
+                                        <span class="small text-secondary">Solicitado a: <strong>Alimentos del Sol S.A.</strong></span>
+                                    </div>
+                                    <button class="btn btn-sm text-danger border-0"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+
+                                <div id="contenedor-dinamico-glass"></div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="glassToast" class="toast align-items-center text-white bg-dark border-0 rounded-3" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-text">
+                    ¡Solicitud de reunión procesada!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function enviarSolicitudGlass(button, nombreEmpresa) {
+            button.disabled = true;
+            button.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Enviando...`;
+
+            setTimeout(() => {
+                button.className = "btn btn-sm btn-outline-secondary w-100 rounded-3 mt-1 py-2";
+                button.innerHTML = `<i class="fa-solid fa-check-double me-1"></i> Solicitud Enviada`;
+
+                // Agregar dinámicamente a la agenda
+                const container = document.getElementById('contenedor-dinamico-glass');
+                const row = document.createElement('div');
+                row.className = "p-3 mb-2 agenda-row pending d-flex justify-content-between align-items-center flex-wrap gap-2 mt-2";
+                row.innerHTML = `
+                    <div>
+                        <span class="badge bg-warning bg-opacity-20 text-warning badge-status mb-1">Pendiente (Simulación)</span>
+                        <h6 class="fw-bold m-0 text-dark">10:30 - 11:00 hs | <span class="text-muted small">Mesa pendiente</span></h6>
+                        <span class="small text-secondary">Solicitado a: <strong>${nombreEmpresa}</strong></span>
+                    </div>
+                `;
+                container.appendChild(row);
+
+                // Disparar Toast Informativo
+                const toastEl = document.getElementById('glassToast');
+                document.getElementById('toast-text').innerText = `Se generó la solicitud para ${nombreEmpresa} en la base de datos simulada.`;
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

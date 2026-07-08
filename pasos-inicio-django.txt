@@ -1,0 +1,210 @@
+PASOS PARA INICIAR EL PROYECTO DJANGO (RondaNegocios)
+=======================================================
+Contexto detectado en este entorno:
+- OS: Ubuntu 20.04.6 LTS (coincide con la infra objetivo del proyecto)
+- Python del sistema: 3.8.10
+- PostgreSQL 12 corriendo en localhost:5433 (cluster "main", ya activo)
+- Todavía no hay: entorno virtual, Django, requirements.txt, ni base de datos creada
+- Ya existen: Idea-de-proyecto.txt (spec funcional) y modelo-frontend.html (guía de diseño)
+
+------------------------------------------------------------
+0) DECIDIR VERSIÓN DE PYTHON Y DE DJANGO (hacerlo antes que nada)
+------------------------------------------------------------
+- Python 3.8 solo es compatible hasta Django 4.2 LTS (soporte extendido termina
+  abril 2026, es decir, prácticamente vencido a la fecha de hoy).
+- Recomendado: instalar Python 3.11 o 3.12 (vía deadsnakes PPA o pyenv) y usar
+  Django 5.2 LTS (soporte hasta abril 2028). Esto no afecta que el server final
+  corra en Ubuntu 20.04, solo se instala una versión de Python más nueva ahí también.
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt update
+    sudo apt install python3.12 python3.12-venv python3.12-dev
+- Alternativa (sin tocar el sistema): quedarse con Python 3.8 + Django 4.2 LTS.
+  Es la opción "menos esfuerzo ahora" pero ya cercana a fin de soporte.
+=> Definir esto primero porque condiciona el comando de creación del entorno virtual.
+
+------------------------------------------------------------
+1) ENTORNO VIRTUAL
+------------------------------------------------------------
+    python3.12 -m venv .venv          # o python3.8 -m venv .venv si se sigue con 3.8
+    source .venv/bin/activate
+    python -m pip install --upgrade pip
+
+------------------------------------------------------------
+2) INSTALAR DEPENDENCIAS BASE
+------------------------------------------------------------
+    pip install "django>=5.2,<5.3"     # o "django>=4.2,<4.3" si se usa Python 3.8
+    pip install psycopg[binary]        # driver de PostgreSQL
+    pip install django-environ         # manejo de variables de entorno / .env
+    pip install python-decouple        # (alternativa a django-environ, elegir una sola)
+
+Dependencias de desarrollo (separadas de producción, ver punto 4):
+    pip install django-debug-toolbar
+    pip install pytest pytest-django
+    pip install black isort ruff       # formateo y linting
+    pip install pre-commit
+
+------------------------------------------------------------
+3) CREAR EL PROYECTO CON ESTRUCTURA "CONFIG" (buena práctica recomendada)
+------------------------------------------------------------
+En vez de que django-admin cree una carpeta con el nombre del proyecto que choca
+con el repo, usar layout tipo "config/" + carpeta "apps/":
+
+    django-admin startproject config .
+
+Estructura resultante recomendada:
+    RondaNegocios/
+      manage.py
+      config/
+        __init__.py
+        settings/
+          __init__.py
+          base.py
+          dev.py
+          prod.py
+        urls.py
+        wsgi.py
+        asgi.py
+      apps/
+        __init__.py
+      requirements/
+        base.txt
+        dev.txt
+        prod.txt
+      .env
+      .env.example
+      .gitignore
+
+------------------------------------------------------------
+4) SETTINGS DIVIDIDOS POR ENTORNO
+------------------------------------------------------------
+- Mover config/settings.py -> config/settings/base.py
+- Crear dev.py y prod.py que hagan "from .base import *" y sobrescriban lo necesario
+  (DEBUG, ALLOWED_HOSTS, DATABASES, EMAIL_BACKEND, etc.)
+- En manage.py y wsgi.py/asgi.py, apuntar a DJANGO_SETTINGS_MODULE=config.settings.dev
+  (usar variable de entorno, no hardcodear)
+- Usar django-environ para leer SECRET_KEY, DEBUG, DATABASE_URL, etc. desde .env
+- NUNCA commitear .env (sí commitear .env.example con las claves sin valores reales)
+
+------------------------------------------------------------
+5) REQUIREMENTS SEPARADOS
+------------------------------------------------------------
+    requirements/base.txt   -> Django, psycopg, django-environ (lo que va a prod sí o sí)
+    requirements/dev.txt    -> -r base.txt + debug-toolbar, pytest, black, isort, ruff
+    requirements/prod.txt   -> -r base.txt + gunicorn, whitenoise
+
+Generarlos con:
+    pip freeze > requirements/dev.txt   (ajustar a mano para separar por entorno)
+
+------------------------------------------------------------
+6) BASE DE DATOS POSTGRESQL
+------------------------------------------------------------
+El cluster ya está activo en el puerto 5433. Crear usuario y base dedicados
+(no usar el usuario "postgres" para la app):
+
+    sudo -u postgres psql -p 5433 -c "CREATE USER rondanegocios_user WITH PASSWORD 'elegir_una_clave_segura';"
+    sudo -u postgres psql -p 5433 -c "CREATE DATABASE rondanegocios_db OWNER rondanegocios_user;"
+
+En .env:
+    DATABASE_URL=postgres://rondanegocios_user:clave@localhost:5433/rondanegocios_db
+
+En settings/base.py:
+    DATABASES = {"default": env.db()}   # con django-environ
+
+------------------------------------------------------------
+7) MODELO DE USUARIO PERSONALIZADO (CRÍTICO - hacer ANTES de la primera migración)
+------------------------------------------------------------
+Django recomienda siempre definir un custom user model desde el día uno, aunque
+al principio sea igual al default, porque cambiarlo después de migrar es muy
+costoso. Dado el esquema de roles (Super Admin, Organización, Empresa,
+Representante) descrito en Idea-de-proyecto.txt, esto es directamente necesario:
+
+    python manage.py startapp accounts   (dentro de apps/, ajustar apps.py con
+                                           name = "apps.accounts")
+- Crear apps/accounts/models.py con class User(AbstractUser)
+- Setear AUTH_USER_MODEL = "accounts.User" en settings/base.py
+- Registrar el modelo en admin.py
+
+------------------------------------------------------------
+8) ESTRUCTURA DE APPS (según el dominio del proyecto)
+------------------------------------------------------------
+Basado en el esquema de Idea-de-proyecto.txt, separar en apps chicas y cohesivas
+en vez de una app monolítica, por ejemplo:
+    apps/accounts        -> usuarios, roles, autenticación
+    apps/organizations   -> organizaciones (multi-tenant)
+    apps/companies        -> empresas, rubros, productos, servicios
+    apps/events           -> eventos, mesas, bloques horarios, inscripciones
+    apps/meetings         -> solicitudes de reunión, agenda, matching
+    apps/accreditation    -> credenciales, QR, check-in
+    apps/payments         -> integración Mercado Pago, planes, suscripciones
+    apps/notifications    -> notificaciones y mensajería interna
+
+No crear todas ahora: crear solo las que se necesiten para el primer módulo a
+desarrollar, e ir agregando incrementalmente.
+
+------------------------------------------------------------
+9) MIGRACIONES INICIALES Y SUPERUSUARIO
+------------------------------------------------------------
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py createsuperuser
+
+------------------------------------------------------------
+10) ARCHIVOS ESTÁTICOS Y MEDIA
+------------------------------------------------------------
+- Configurar STATIC_URL, STATICFILES_DIRS, MEDIA_URL, MEDIA_ROOT en base.py
+- Para producción: instalar whitenoise para servir estáticos sin depender de Nginx
+  directamente en la primera etapa
+- Integrar Bootstrap 5 (según Idea-de-proyecto.txt) vía npm o django-compressor,
+  a definir cuando se ataque el frontend
+
+------------------------------------------------------------
+11) GIT Y CONTROL DE VERSIONES
+------------------------------------------------------------
+    git init
+    Crear .gitignore (plantilla oficial de GitHub para Python/Django):
+      .venv/, __pycache__/, *.pyc, .env, db.sqlite3, media/, staticfiles/, .DS_Store
+    git add .
+    git commit -m "Initial Django project setup"
+- Crear repo remoto en GitHub (mencionado en la infraestructura del proyecto)
+
+------------------------------------------------------------
+12) CALIDAD DE CÓDIGO Y PRE-COMMIT
+------------------------------------------------------------
+- Crear pyproject.toml con configuración de black, isort y ruff
+- Crear .pre-commit-config.yaml con hooks de black/isort/ruff/end-of-file-fixer
+    pre-commit install
+
+------------------------------------------------------------
+13) TESTING
+------------------------------------------------------------
+- Configurar pytest.ini o pyproject.toml para pytest-django
+- Crear estructura de tests por app (apps/<app>/tests/)
+- Definir DJANGO_SETTINGS_MODULE=config.settings.dev para tests locales
+
+------------------------------------------------------------
+14) VARIABLES DE ENTORNO Y SECRETOS
+------------------------------------------------------------
+- .env.example con todas las claves necesarias documentadas (sin valores reales):
+    SECRET_KEY=
+    DEBUG=
+    DATABASE_URL=
+    ALLOWED_HOSTS=
+    MERCADOPAGO_ACCESS_TOKEN=
+    MERCADOPAGO_PUBLIC_KEY=
+    EMAIL_HOST=, EMAIL_HOST_USER=, EMAIL_HOST_PASSWORD=
+
+------------------------------------------------------------
+15) DOCUMENTACIÓN MÍNIMA
+------------------------------------------------------------
+- README.md con instrucciones de instalación local (venv, .env, migraciones)
+- Mantener Idea-de-proyecto.txt como referencia funcional viva del proyecto
+
+------------------------------------------------------------
+PENDIENTE PARA MÁS ADELANTE (no bloquea el arranque)
+------------------------------------------------------------
+- Definir si se expone una API (Django REST Framework) para un futuro frontend
+  desacoplado o app mobile, o si se sigue con vistas Django clásicas + Bootstrap.
+- Integración Mercado Pago (requiere cuenta y credenciales de test).
+- Dockerización del proyecto (Dockerfile + docker-compose con Postgres) para
+  alinear entorno local con la infraestructura de producción descripta.
+- Configuración de Nginx + Gunicorn + SSL cuando se llegue a despliegue.

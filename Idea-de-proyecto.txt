@@ -1,0 +1,587 @@
+# Plataforma de Vinculación Empresarial y Rondas de Negocios (SaaS)
+
+En principio, el evento principal son rondas de negocios que pueden crear/organizar ciertas Organizaciones. Una ronda de negocios se compone de uno o varios días, en un horario específico, un lugar físico (evento presencial) y mesas donde las empresas pueden llevar una agenda de entrevistas/reuniones de negocio con otras empresas. Aparte de estas mesas de reuniones entre empresas también existen exposiciones y charlas y al evento pueden asistir público en general comprando una entrada en el mismo sitio (en el mismo también gestionará la entrega de credenciales y QR de acceso). Luego el sistema puede ir escalando, pero ese es el primer objetivo del sistema.
+
+Imagino crear usuarios empresas para que se registren y completen todo un perfil lindo y estético (tipo LinkedIn), que permita tener un perfil público de la misma. Dentro de un menú de opciones la posibilidad de ver próximos eventos e inscribirse a los mismos (no tenemos resuelto cómo será el cobro de la participación al mismo).
+
+Una empresa inscripta a una ronda de negocios puede gestionar su agenda de entrevistas (al crear el evento se configurará la duración de cada y la cantidad de entrevistas por empresa). Tener en cuenta que puede ser un evento de más de un día.
+Una empresa A puede solicitar a otra B tener una reunión a tal horario, quedará en reserva en la agenda de ambos, y cuando la empresa B acepte quedará confirmado dicha reunión ocupando el casillero en la agenda de ambos. Ya debe quedar asignado nro de mesa y todo. El sistema también debe sugerir macheos de reuniones con otras empresas que pueden llegar a interesarle teniendo en cuenta el perfil de cada empresa, lo que ofrece, lo que busca, entre otros... Crear un sólido sistema que detecte esto.
+
+Una empresa también puede crear participantes o representantes de la misma. Los cuales también tendrán credenciales para asistir al evento, credenciales que deben generarse automáticamente con QRs e info.
+
+Esto es lo básico, luego investigando en internet encontré el siguiente esquema que también me gustaría tener en cuenta aparte de lo que describí hasta el momento:
+
+## Descripción General
+
+La Plataforma Permanente de Vinculación Empresarial es una solución SaaS (Software as a Service) diseñada para conectar empresas, industrias, organismos públicos, instituciones y potenciales compradores mediante eventos de networking, rondas de negocios, ferias, exposiciones, encuentros sectoriales y actividades de vinculación productiva.
+
+La plataforma funcionará de manera permanente durante todo el año, permitiendo a las organizaciones crear eventos, gestionar participantes, generar oportunidades comerciales y mantener una red empresarial activa más allá de cada encuentro puntual.
+
+El objetivo principal es facilitar la generación de negocios, alianzas estratégicas, cadenas de valor, oportunidades comerciales y nuevos vínculos empresariales a través de herramientas tecnológicas modernas y automatizadas.
+
+Tener en cuenta lo siguiente:
+¿qué ofrece la competencia? Explorar este link: https://eventos.biz/fichas-plataforma-rdn/index.php
+---
+
+# Objetivos de la Plataforma
+
+* Centralizar la gestión de eventos empresariales.
+* Facilitar el networking entre empresas.
+* Automatizar el proceso de matching empresarial.
+* Organizar rondas de negocios presenciales y virtuales.
+* Gestionar agendas inteligentes de reuniones.
+* Digitalizar acreditaciones y asistencia.
+* Generar métricas y estadísticas para organizadores.
+* Permitir la monetización mediante suscripciones y eventos pagos.
+* Crear una comunidad empresarial permanente.
+
+---
+
+# Arquitectura Tecnológica
+
+## Backend
+
+* Python
+* Django
+* PostgreSQL
+
+## Frontend
+
+* Responsive Design (el 90% de las personas utilizarán la versión mobile)
+* HTML5
+* CSS3
+* Bootstrap 5
+* JavaScript
+* Diseño Mobile First
+
+## Base de Datos
+
+* PostgreSQL
+
+## Infraestructura
+
+* Linux(Ubuntu 20.04.6 LTS)
+* Nginx
+* Gunicorn
+* Github
+* Certificados SSL
+* Sistema de backups automáticos
+
+---
+
+# Diseño UX/UI
+
+La plataforma deberá estar desarrollada bajo una filosofía Mobile First.
+
+Características:
+
+* Diseño moderno siguiendo el patrón de diseño, estilo y paleta de colores del archivo "modelo-frontend.html" en la raíz del proyecto.
+* Interfaz corporativa premium.
+* Navegación intuitiva.
+* Accesibilidad.
+* Compatible con smartphones.
+* Compatible con tablets.
+* Compatible con notebooks.
+* Compatible con monitores de escritorio.
+
+La interfaz deberá priorizar:
+
+* Velocidad.
+* Simplicidad.
+* Conversión.
+* Facilidad de uso.
+
+---
+
+# Sistema Multi Organización (Por el momento va a ser una sola organización, pero en caso de que escale, vamos a dejarlo armado)
+
+La plataforma permitirá que múltiples organizaciones administren sus propios eventos.
+
+Ejemplos:
+
+* Cámaras empresarias.
+* Municipios.
+* Gobiernos provinciales.
+* Agencias de desarrollo.
+* Universidades.
+* Parques industriales.
+* Organizadores privados.
+
+Cada organización tendrá independencia de datos.
+
+---
+
+# Módulo de Empresas
+
+Cada empresa contará con un perfil institucional completo (Si hay que agregar más, sugerirlos)
+
+Información:
+
+* Razón social.
+* CUIT.
+* Logo.
+* Descripción.
+* Rubro.
+* Sitio web.
+* Redes sociales.
+* Dirección.
+* Localidad.
+* Provincia.
+* País.
+* Cantidad de empleados.
+* Capacidad productiva.
+* Certificaciones.
+* Productos.
+* Servicios.
+
+---
+
+# Sistema de Networking Empresarial
+
+Las empresas podrán:
+
+* Buscar empresas.
+* Filtrar empresas.
+* Guardar favoritos.
+* Solicitar contacto.
+* Compartir datos (Por el momento no compartir datos de contacto, luego vemos si esto se modifica)
+* Conectar con otras empresas.
+* Gestionar relaciones comerciales.
+
+---
+
+# Motor de Matching Inteligente
+
+El sistema analizará:
+
+* Productos ofrecidos.
+* Servicios ofrecidos.
+* Necesidades declaradas.
+* Rubros.
+* Ubicación geográfica.
+* Intereses comerciales.
+
+Generando:
+
+* Recomendaciones automáticas.
+* Ranking de compatibilidad.
+* Sugerencias de reuniones.
+* Oportunidades comerciales.
+
+---
+
+# Gestión de Eventos
+
+Tipos de eventos:
+
+* Rondas de negocios.
+* Ferias.
+* Exposiciones.
+* Congresos.
+* Capacitaciones.
+* Seminarios.
+* Workshops.
+* Encuentros empresariales.
+
+Configuraciones:
+
+* Fecha.
+* Lugar.
+* Cupos.
+* Modalidad.
+* Horarios.
+* Costos.
+* Estado.
+
+---
+
+# Sistema de Inscripciones
+
+Permite:
+
+* Inscripción online.
+* Validación automática.
+* Validación manual.
+* Gestión de cupos.
+* Gestión documental.
+* Confirmaciones automáticas.
+
+---
+
+# Integración completa con Mercado Pago. (integrar todo, dejar las variables indicadas para completar, no importa si para el pago nos lleva a mercadopago, luego de procesarse tiene que volver al sitio con la validación del mismo para que la matriculación sea automática)
+
+Medios de pago soportados:
+
+* Tarjetas de crédito.
+* Tarjetas de débito.
+* Transferencias.
+* Dinero en cuenta Mercado Pago.
+* Cuotas.
+* QR de pago.
+* Links de pago.
+
+---
+
+# Sistema de Planes y Suscripciones
+
+Planes:
+
+## Plan Gratuito
+
+* Perfil empresarial básico.
+* Participación limitada.
+
+## Plan Profesional
+
+* Perfil avanzado.
+* Mayor visibilidad.
+* Acceso a eventos premium.
+
+## Plan Corporativo
+
+* Usuarios ilimitados.
+* Matching avanzado.
+* Estadísticas avanzadas.
+
+---
+
+# Sistema de Solicitudes de Reunión
+
+Las empresas podrán:
+
+* Solicitar reuniones.
+* Aceptar reuniones.
+* Rechazar reuniones.
+* Reprogramar reuniones.
+* Cancelar reuniones.
+
+---
+
+# Agenda Inteligente
+
+Generación automática de agendas.
+
+Consideraciones:
+
+* Disponibilidad.
+* Compatibilidades.
+* Mesas disponibles.
+* Horarios disponibles.
+* Duración configurable.
+
+Objetivos:
+
+* Maximizar reuniones.
+* Evitar conflictos.
+* Optimizar recursos.
+
+---
+
+# Rondas Presenciales
+
+Funciones:
+
+* Asignación de mesas.
+* Rotación automática.
+* Cronograma.
+* Check-in.
+* QR de acceso.
+
+---
+
+# Sistema de Acreditaciones
+
+* Código QR.
+* Credenciales digitales.
+* Check-in.
+* Check-out.
+* Control de asistencia.
+
+---
+
+# Mensajería Interna
+
+Funciones:
+
+* Notificaciones.
+* Solicitudes de contacto.
+* Mensajes directos.
+
+---
+
+# Sistema de Notificaciones
+
+Canales:
+
+* Email.
+* Alertas internas.
+
+Eventos:
+
+* Nuevos matches.
+* Reuniones aprobadas.
+* Cambios de agenda.
+* Pagos confirmados.
+
+---
+
+# Dashboard Empresarial
+
+Indicadores:
+
+* Reuniones realizadas.
+* Solicitudes recibidas.
+* Matches generados.
+* Eventos activos.
+* Contactos obtenidos.
+
+---
+
+# Dashboard Organizador
+
+Indicadores:
+
+* Empresas registradas.
+* Empresas acreditadas.
+* Pagos.
+* Eventos.
+* Reuniones.
+* Estadísticas generales.
+
+---
+
+# Reportes
+
+Métricas:
+
+* Participación.
+* Conversión.
+* Matching.
+* Actividad empresarial.
+* Facturación.
+
+---
+
+# Roles del Sistema
+
+## Super Administrador
+
+Control total.
+
+## Organización
+
+Administración de eventos.
+
+## Empresa
+
+Participación empresarial.
+
+## Representante
+
+Participación individual.
+
+---
+
+# Seguridad
+
+* SSL.
+* Autenticación segura.
+* Recuperación de contraseña.
+* Auditoría de acciones.
+* Gestión de permisos.
+* Logs de actividad.
+
+---
+
+# Esquema Inicial de Base de Datos
+
+## organizaciones
+
+* id
+* nombre
+* descripcion
+* logo
+* email
+* telefono
+* sitio_web
+* fecha_creacion
+
+## usuarios
+
+* id
+* organizacion_id
+* empresa_id
+* nombre
+* apellido
+* email
+* password
+* rol
+* activo
+
+## empresas
+
+* id
+* organizacion_id
+* razon_social
+* cuit
+* descripcion
+* rubro_id
+* sitio_web
+* logo
+* localidad
+* provincia
+* pais
+* fecha_creacion
+
+## rubros
+
+* id
+* nombre
+
+## productos
+
+* id
+* empresa_id
+* nombre
+* descripcion
+
+## servicios
+
+* id
+* empresa_id
+* nombre
+* descripcion
+
+## necesidades
+
+* id
+* empresa_id
+* descripcion
+
+## eventos
+
+* id
+* organizacion_id
+* nombre
+* descripcion
+* fecha_inicio
+* fecha_fin
+* modalidad
+* ubicacion
+* estado
+
+## inscripciones
+
+* id
+* evento_id
+* empresa_id
+* estado
+* fecha_inscripcion
+
+## participantes
+
+* id
+* empresa_id
+* nombre
+* apellido
+* cargo
+* email
+* telefono
+
+## solicitudes_reunion
+
+* id
+* empresa_origen_id
+* empresa_destino_id
+* evento_id
+* estado
+* fecha_solicitud
+
+## reuniones
+
+* id
+* evento_id
+* empresa_a_id
+* empresa_b_id
+* mesa_id
+* bloque_horario_id
+* estado
+
+## mesas
+
+* id
+* evento_id
+* numero
+
+## bloques_horarios
+
+* id
+* evento_id
+* hora_inicio
+* hora_fin
+
+## matches
+
+* id
+* empresa_a_id
+* empresa_b_id
+* score
+
+## mensajes
+
+* id
+* remitente_id
+* destinatario_id
+* contenido
+* fecha_envio
+
+## notificaciones
+
+* id
+* usuario_id
+* titulo
+* mensaje
+* leida
+
+## pagos
+
+* id
+* usuario_id
+* evento_id
+* monto
+* estado
+* metodo_pago
+* referencia_mp
+* fecha_pago
+
+## planes
+
+* id
+* nombre
+* precio
+* descripcion
+
+## suscripciones
+
+* id
+* usuario_id
+* plan_id
+* fecha_inicio
+* fecha_fin
+* estado
+
+## acreditaciones
+
+* id
+* participante_id
+* codigo_qr
+* checkin
+* checkout
+
+## auditoria
+
+* id
+* usuario_id
+* accion
+* fecha
+* detalles
