@@ -1,0 +1,57 @@
+{% extends "app_base.html" %}
+
+{% block title %}Gestión de eventos — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">Organización</span>
+    <h2 class="fw-bold m-0 text-dark">Gestión de eventos</h2>
+  </div>
+  <a href="{% url 'events:create' %}" class="btn btn-dark-glass px-3 py-2">
+    <i class="fa-solid fa-plus me-1"></i> Nuevo evento
+  </a>
+</div>
+
+{% if events %}
+  <div class="row g-3">
+    {% for event in events %}
+      <div class="col-12">
+        <div class="glass-card p-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <h6 class="fw-bold m-0">{{ event.name }}</h6>
+              {% if event.status == 'published' %}
+                <span class="badge bg-success bg-opacity-25 text-success">Publicado</span>
+              {% elif event.status == 'draft' %}
+                <span class="badge bg-secondary bg-opacity-25 text-secondary">Borrador</span>
+              {% elif event.status == 'finished' %}
+                <span class="badge bg-primary bg-opacity-25 text-primary">Finalizado</span>
+              {% else %}
+                <span class="badge bg-danger bg-opacity-25 text-danger">Cancelado</span>
+              {% endif %}
+              <span class="badge badge-glass-match">{{ event.get_event_type_display }}</span>
+            </div>
+            <div class="small text-secondary mt-1">
+              <i class="fa-regular fa-calendar me-1"></i>{{ event.start_date|date:"d/m/Y" }} – {{ event.end_date|date:"d/m/Y" }}
+              {% if event.location %}<span class="ms-2"><i class="fa-solid fa-location-dot me-1"></i>{{ event.location }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="{% url 'events:public_detail' event.slug %}" target="_blank" class="btn btn-sm btn-outline-dark rounded-3" title="Ver público"><i class="fa-solid fa-eye"></i></a>
+            <a href="{% url 'events:update' event.pk %}" class="btn btn-sm btn-dark-glass py-2"><i class="fa-solid fa-pen me-1"></i>Editar</a>
+            <a href="{% url 'events:delete' event.pk %}" class="btn btn-sm btn-outline-danger rounded-3"><i class="fa-solid fa-trash"></i></a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="glass-card p-5 text-center">
+    <div class="feature-icon mx-auto mb-3"><i class="fa-regular fa-calendar-plus"></i></div>
+    <h6 class="fw-bold">Todavía no creaste eventos</h6>
+    <p class="small text-secondary mb-3">Creá tu primer evento para empezar a recibir inscripciones.</p>
+    <a href="{% url 'events:create' %}" class="btn btn-dark-glass px-4 py-2">Crear evento</a>
+  </div>
+{% endif %}
+{% endblock %}

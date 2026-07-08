@@ -1,0 +1,53 @@
+{% extends "app_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}Editar evento{% else %}Nuevo evento{% endif %} — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">Organización</span>
+    <h2 class="fw-bold m-0 text-dark">{% if object %}Editar evento{% else %}Nuevo evento{% endif %}</h2>
+  </div>
+  <a href="{% url 'events:list' %}" class="btn btn-sm btn-outline-dark rounded-3">
+    <i class="fa-solid fa-arrow-left me-1"></i> Volver
+  </a>
+</div>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <div class="glass-card p-4 mb-3">
+    <h6 class="fw-bold mb-3"><i class="fa-regular fa-calendar text-primary me-2"></i>Datos del evento</h6>
+    {{ form|crispy }}
+  </div>
+
+  {% include "companies/_formset_section.html" with formset=activity_formset prefix="activities" title="Programa / Actividades" icon="fa-solid fa-list-check" %}
+
+  <div class="d-flex justify-content-end mb-4">
+    <button type="submit" class="btn btn-dark-glass px-4 py-2">
+      <i class="fa-solid fa-floppy-disk me-1"></i> Guardar evento
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.formset-section').forEach(function (section) {
+    var prefix = section.dataset.prefix;
+    var addBtn = section.querySelector('.add-row');
+    var rows = section.querySelector('.formset-rows');
+    var tmpl = section.querySelector('.empty-template');
+    var totalInput = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
+    addBtn.addEventListener('click', function () {
+      var count = parseInt(totalInput.value, 10);
+      var html = tmpl.innerHTML.replace(/__prefix__/g, count);
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = html.trim();
+      rows.appendChild(wrapper.firstElementChild);
+      totalInput.value = count + 1;
+    });
+  });
+</script>
+{% endblock %}

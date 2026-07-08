@@ -1,0 +1,59 @@
+{% extends "app_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Perfil de empresa — RondaNegocios{% endblock %}
+
+{% block app_content %}
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+  <div>
+    <span class="text-secondary small fw-medium">Mi empresa</span>
+    <h2 class="fw-bold m-0 text-dark">Perfil de empresa</h2>
+  </div>
+  {% if form.instance.slug %}
+    <a href="{% url 'companies:public_detail' form.instance.slug %}" target="_blank"
+       class="btn btn-sm btn-outline-dark rounded-3">
+      <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Ver perfil público
+    </a>
+  {% endif %}
+</div>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+
+  <div class="glass-card p-4 mb-3">
+    <h6 class="fw-bold mb-3"><i class="fa-solid fa-building text-primary me-2"></i>Datos institucionales</h6>
+    {{ form|crispy }}
+  </div>
+
+  {% include "companies/_formset_section.html" with formset=product_formset prefix="products" title="Productos" icon="fa-solid fa-box" %}
+  {% include "companies/_formset_section.html" with formset=service_formset prefix="services" title="Servicios" icon="fa-solid fa-gear" %}
+  {% include "companies/_formset_section.html" with formset=need_formset prefix="needs" title="Necesidades (lo que busco)" icon="fa-solid fa-magnifying-glass" %}
+
+  <div class="d-flex justify-content-end gap-2 mb-4">
+    <button type="submit" class="btn btn-dark-glass px-4 py-2">
+      <i class="fa-solid fa-floppy-disk me-1"></i> Guardar cambios
+    </button>
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.formset-section').forEach(function (section) {
+    var prefix = section.dataset.prefix;
+    var addBtn = section.querySelector('.add-row');
+    var rows = section.querySelector('.formset-rows');
+    var tmpl = section.querySelector('.empty-template');
+    var totalInput = document.getElementById('id_' + prefix + '-TOTAL_FORMS');
+
+    addBtn.addEventListener('click', function () {
+      var count = parseInt(totalInput.value, 10);
+      var html = tmpl.innerHTML.replace(/__prefix__/g, count);
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = html.trim();
+      rows.appendChild(wrapper.firstElementChild);
+      totalInput.value = count + 1;
+    });
+  });
+</script>
+{% endblock %}

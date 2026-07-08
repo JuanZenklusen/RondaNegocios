@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} — RondaNegocios{% endblock %}
+{% block meta_description %}{{ event.description|striptags|truncatechars:155 }}{% endblock %}
+
+{% block body %}
+<div class="container py-3 py-md-4">
+  <nav class="mb-4">
+    <a href="{% url 'events:public_list' %}" class="text-decoration-none d-inline-flex align-items-center">
+      <i class="fa-solid fa-arrow-left me-2"></i><span class="fw-semibold">Volver a eventos</span>
+    </a>
+  </nav>
+
+  <!-- Encabezado -->
+  <div class="glass-card overflow-hidden mb-4">
+    {% if event.cover %}
+      <img src="{{ event.cover.url }}" alt="{{ event.name }}" class="w-100" style="max-height: 260px; object-fit: cover;">
+    {% endif %}
+    <div class="p-4 p-md-5">
+      <div class="d-flex gap-2 flex-wrap mb-2">
+        <span class="badge badge-glass-match">{{ event.get_event_type_display }}</span>
+        <span class="badge bg-dark text-white">{{ event.get_modality_display }}</span>
+        {% if event.is_free %}
+          <span class="badge bg-success bg-opacity-25 text-success">Entrada libre</span>
+        {% else %}
+          <span class="badge bg-dark text-white">${{ event.general_price }}</span>
+        {% endif %}
+      </div>
+      <h1 class="fw-bold mb-2">{{ event.name }}</h1>
+      <div class="text-secondary mb-3">
+        <span class="me-3"><i class="fa-regular fa-calendar me-1"></i>{{ event.start_date|date:"d/m/Y" }}{% if event.end_date != event.start_date %} – {{ event.end_date|date:"d/m/Y" }}{% endif %}</span>
+        {% if event.location %}<span><i class="fa-solid fa-location-dot me-1"></i>{{ event.location }}{% if event.address %}, {{ event.address }}{% endif %}</span>{% endif %}
+      </div>
+      {% if event.description %}<p class="text-secondary">{{ event.description|linebreaksbr }}</p>{% endif %}
+
+      <button type="button" class="btn btn-dark-glass px-4 py-2 mt-2" id="inscribirme"
+              data-free="{% if event.is_free %}1{% else %}0{% endif %}"
+              data-price="{{ event.general_price }}"
+              data-auth="{% if request.user.is_authenticated %}1{% else %}0{% endif %}">
+        <i class="fa-solid fa-ticket me-1"></i> Inscribirme
+      </button>
+    </div>
+  </div>
+
+  <!-- Programa -->
+  {% if activities %}
+  <div class="glass-card p-4 p-md-5">
+    <h4 class="fw-bold mb-4"><i class="fa-solid fa-list-check text-primary me-2"></i>Programa</h4>
+    {% for activity in activities %}
+      <div class="agenda-row {% if activity.is_public %}confirmed{% else %}pending{% endif %} p-3 mb-2">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <span class="badge badge-glass-match mb-1">{{ activity.get_activity_type_display }}</span>
+            {% if activity.is_public %}
+              <span class="badge bg-success bg-opacity-25 text-success mb-1">Abierta al público</span>
+            {% else %}
+              <span class="badge bg-secondary bg-opacity-25 text-secondary mb-1">Solo empresas</span>
+            {% endif %}
+            <h6 class="fw-bold m-0">{{ activity.title }}</h6>
+            {% if activity.description %}<p class="small text-secondary mb-0 mt-1">{{ activity.description }}</p>{% endif %}
+            {% if activity.room %}<span class="small text-secondary"><i class="fa-solid fa-door-open me-1"></i>{{ activity.room }}</span>{% endif %}
+          </div>
+          <div class="text-end small fw-medium text-muted">
+            <i class="fa-regular fa-clock me-1"></i>{{ activity.start|date:"d/m H:i" }}{% if activity.end %} – {{ activity.end|date:"H:i" }}{% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Inscripción PROVISORIA: el pago real (Mercado Pago) se integra en una fase
+  // posterior. Por ahora se simula con SweetAlert.
+  document.getElementById('inscribirme').addEventListener('click', function () {
+    const btn = this;
+    const isAuth = btn.dataset.auth === '1';
+    const isFree = btn.dataset.free === '1';
+    const price = btn.dataset.price;
+
+    if (!isAuth) {
+      Swal.fire({
+        title: 'Necesitás una cuenta',
+        text: 'Ingresá o registrate como asistente para inscribirte al evento.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Ingresar',
+        cancelButtonText: 'Registrarme',
+        confirmButtonColor: '#0f172a',
+      }).then((r) => {
+        window.location.href = r.isConfirmed ? '{% url "accounts:login" %}' : '{% url "accounts:register_attendee" %}';
+      });
+      return;
+    }
+
+    if (isFree) {
+      Swal.fire({
+        title: '¿Confirmar inscripción?',
+        text: 'Este evento es de entrada libre.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, inscribirme',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0f172a',
+      }).then((r) => {
+        if (r.isConfirmed) {
+          Swal.fire({ icon: 'success', title: '¡Inscripción registrada! (simulada)',
+            text: 'La inscripción real se habilita en la próxima etapa.', confirmButtonColor: '#0f172a' });
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Pago simulado',
+        html: 'El pago con Mercado Pago se integra más adelante.<br>Monto: <strong>$' + price + '</strong>',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Simular pago',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0f172a',
+      }).then((r) => {
+        if (r.isConfirmed) {
+          Swal.fire({ icon: 'success', title: '¡Pago simulado con éxito!',
+            text: 'Tu inscripción quedaría confirmada (simulado).', confirmButtonColor: '#0f172a' });
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

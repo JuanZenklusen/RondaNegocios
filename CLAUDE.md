@@ -38,6 +38,8 @@ pero la estructura queda lista para escalar).
 - Regla clave: la lógica de negocio va en una **capa de servicios**
   (`apps/<app>/services.py`), no en las vistas ni pegada a los templates. Así el
   día que se exponga por API, la lógica ya está desacoplada y se reutiliza.
+- Usar urls limpias, sin id ni información sensible. De ser necesario, utilizar
+  slugs
 
 ## Estructura de código
 
@@ -157,18 +159,27 @@ body {
 
 ## Estado actual
 
-**Fases 0, 1 y 2 completas** (17 tests verdes). Fase 0: shell de UI. Fase 1: auth
-con **login por email**. Fase 2: multi-tenant — modelo `Organization`, base
-abstracta **`OrganizationScopedModel`** (heredarla en todo modelo del dominio) con
-`OrganizationScopedQuerySet.for_user(user)`, `User.organization` (FK), org por
-defecto sembrada (`slug="principal"`), mixins `OrganizationScopedQuerysetMixin` /
-`OrganizationFormMixin` para vistas.
+**Fases 0-5 completas** (58 tests verdes). Fase 0: shell de UI. Fase 1: auth
+(**login por email**). Fase 2: multi-tenant — `Organization`, base abstracta
+**`OrganizationScopedModel`** (heredarla en todo modelo del dominio) con
+`.for_user(user)`, `User.organization`, org por defecto (`slug="principal"`),
+mixins `OrganizationScopedQuerysetMixin`/`OrganizationFormMixin`. Fase 3: app
+`companies` — `Company` (scoped, OneToOne User), `Rubro`/`Product`/`Service`/`Need`,
+validador **CUIT**, edición crispy + inline formsets, perfil público `/empresa/<slug>/`.
+Fase 4: app `networking` — `Favorite`, `ConnectionRequest`, directorio con
+búsqueda/filtros, endpoints JSON (fetch+CSRF). `_MyCompanyMixin` da `self.my_company`.
+Fase 5: app `events` — `Event` (scoped), `Activity` (programa), `Table`, `TimeBlock`;
+CRUD organizador (inline formset de actividades); listado/detalle público;
+**pagos SIMULADOS** con SweetAlert (integración real = fase posterior). Nuevo rol
+**`attendee`** (público) con su registro.
 
-**Notas del entorno**: (1) login por **email**, no username. (2) `runserver` NO
-puede bindear puerto en el sandbox de Claude — validar con test client
-(`Client(SERVER_NAME='localhost')`, ALLOWED_HOSTS pide host localhost) o pedirle al
-usuario que corra. (3) Django fijado en **4.2** (Postgres 12); cuidado con paquetes
-que arrastran Django 5/6 (crispy) — pinnear.
+**Roles**: superadmin, organization, company, representative, attendee.
+**Manual de usuario**: `docs/MANUAL-USUARIO.md` — actualizar al cerrar cada fase.
 
-**Próximo: Fase 3 (empresas / perfil tipo LinkedIn).** Los modelos heredan de
-`OrganizationScopedModel`. Ver `docs/DEVELOPMENT-PLAN.md`.
+**Notas del entorno**: (1) login por **email**. (2) `runserver` NO puede bindear
+puerto en el sandbox — validar con test client (`Client(SERVER_NAME='localhost')`).
+(3) Django fijado en **4.2** (Postgres 12); pinnear paquetes que arrastren Django 5/6.
+(4) Pillow instalado. (5) Datos demo: `python manage.py seed_demo` (empresas/eventos
+ficticios); credenciales en `CREDENCIALES-DEMO.txt` (git-ignored).
+
+**Próximo: Fase 6 (inscripciones a eventos).** Ver `docs/DEVELOPMENT-PLAN.md`.

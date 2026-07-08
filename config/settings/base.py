@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.organizations",
+    "apps.companies",
+    "apps.networking",
+    "apps.events",
 ]
 
 # django-crispy-forms

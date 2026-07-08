@@ -1,0 +1,27 @@
+{% extends "accounts/auth_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registro de asistente — RondaNegocios{% endblock %}
+
+{% block auth_content %}
+<h4 class="fw-bold mb-1">Registrate como asistente</h4>
+<p class="text-secondary small mb-4">
+  Creá tu cuenta para inscribirte a eventos y participar de charlas y actividades
+  abiertas al público.
+</p>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button type="submit" class="btn btn-dark-glass w-100 py-2 mt-2">
+    <i class="fa-solid fa-user-plus me-1"></i> Crear cuenta
+  </button>
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+<p class="text-center small mt-3 text-secondary">
+  ¿Ya tenés cuenta? <a href="{% url 'accounts:login' %}" class="fw-semibold">Ingresá</a><br>
+  ¿Sos una empresa? <a href="{% url 'accounts:register' %}" class="fw-semibold">Registrá tu empresa</a>
+</p>
+{% endblock %}

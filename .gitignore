@@ -21,6 +21,9 @@ staticfiles/
 # Environment variables / secrets
 .env
 
+# Credenciales de datos demo (contienen contraseñas)
+CREDENCIALES-DEMO.txt
+
 # Testing / coverage
 .pytest_cache/
 .coverage

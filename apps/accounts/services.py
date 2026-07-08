@@ -36,3 +36,27 @@ def register_company_user(
         organization=get_default_organization(),
     )
     return user
+
+
+@transaction.atomic
+def register_attendee_user(
+    *,
+    email: str,
+    password: str,
+    first_name: str = "",
+    last_name: str = "",
+) -> User:
+    """Da de alta un usuario con rol Asistente (público general).
+
+    Puede inscribirse a eventos y participar de las actividades abiertas al
+    público (charlas, exposiciones, reuniones públicas).
+    """
+    user = User.objects.create_user(
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        role=User.Role.ATTENDEE,
+        organization=get_default_organization(),
+    )
+    return user

@@ -6,7 +6,12 @@ from django.urls import reverse_lazy
 from django.views.generic import FormView, UpdateView
 
 from . import services
-from .forms import CompanyRegistrationForm, EmailAuthenticationForm, ProfileForm
+from .forms import (
+    AttendeeRegistrationForm,
+    CompanyRegistrationForm,
+    EmailAuthenticationForm,
+    ProfileForm,
+)
 
 
 class RegisterView(FormView):
@@ -23,6 +28,25 @@ class RegisterView(FormView):
         )
         login(self.request, user)
         messages.success(self.request, "¡Cuenta creada! Bienvenido a RondaNegocios.")
+        return super().form_valid(form)
+
+
+class AttendeeRegisterView(FormView):
+    template_name = "accounts/register_attendee.html"
+    form_class = AttendeeRegistrationForm
+    success_url = reverse_lazy("events:public_list")
+
+    def form_valid(self, form):
+        user = services.register_attendee_user(
+            email=form.cleaned_data["email"],
+            password=form.cleaned_data["password1"],
+            first_name=form.cleaned_data.get("first_name", ""),
+            last_name=form.cleaned_data.get("last_name", ""),
+        )
+        login(self.request, user)
+        messages.success(
+            self.request, "¡Cuenta de asistente creada! Ya podés inscribirte a eventos."
+        )
         return super().form_valid(form)
 
 

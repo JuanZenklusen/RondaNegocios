@@ -1,0 +1,59 @@
+{% comment %}JS de favoritos y conexiones (fetch + CSRF por cookie).{% endcomment %}
+<script>
+  function getCookie(name) {
+    const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? m.pop() : '';
+  }
+  const CSRF = getCookie('csrftoken');
+
+  // Toggle favorito
+  document.querySelectorAll('.fav-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const id = btn.dataset.id;
+      fetch('/red/' + id + '/favorito/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          const icon = btn.querySelector('i');
+          if (data.favorited) {
+            icon.className = 'fa-solid text-warning fa-star';
+          } else {
+            icon.className = 'fa-regular text-secondary fa-star';
+          }
+        });
+    });
+  });
+
+  // Conectar (con confirmación SweetAlert2)
+  document.querySelectorAll('.connect-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      const id = btn.dataset.id;
+      const name = btn.dataset.name;
+      Swal.fire({
+        title: '¿Enviar solicitud de conexión?',
+        text: 'Se enviará una solicitud a ' + name + '.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, enviar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#0f172a',
+      }).then(function (result) {
+        if (!result.isConfirmed) return;
+        fetch('/red/' + id + '/conectar/', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': CSRF },
+        })
+          .then((r) => r.json())
+          .then(function () {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Solicitada';
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success',
+              title: 'Solicitud enviada a ' + name, showConfirmButton: false, timer: 3000 });
+          });
+      });
+    });
+  });
+</script>

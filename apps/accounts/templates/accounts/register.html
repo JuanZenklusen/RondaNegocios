@@ -18,6 +18,7 @@
 
 {% block auth_footer %}
 <p class="text-center small mt-3 text-secondary">
-  ¿Ya tenés cuenta? <a href="{% url 'accounts:login' %}" class="fw-semibold">Ingresá</a>
+  ¿Ya tenés cuenta? <a href="{% url 'accounts:login' %}" class="fw-semibold">Ingresá</a><br>
+  ¿Venís como público? <a href="{% url 'accounts:register_attendee' %}" class="fw-semibold">Registrate como asistente</a>
 </p>
 {% endblock %}

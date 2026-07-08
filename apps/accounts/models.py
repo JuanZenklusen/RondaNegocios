@@ -38,6 +38,7 @@ class User(AbstractUser):
         ORGANIZATION = "organization", "Organización"
         COMPANY = "company", "Empresa"
         REPRESENTATIVE = "representative", "Representante"
+        ATTENDEE = "attendee", "Asistente"
 
     # Email como identificador de login (en vez de username).
     username = None
@@ -73,3 +74,7 @@ class User(AbstractUser):
     @property
     def is_organization(self):
         return self.role == self.Role.ORGANIZATION
+
+    @property
+    def is_attendee(self):
+        return self.role == self.Role.ATTENDEE

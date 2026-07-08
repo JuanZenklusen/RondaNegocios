@@ -11,8 +11,8 @@ from django.contrib.auth.forms import (
 from .models import User
 
 
-class CompanyRegistrationForm(UserCreationForm):
-    """Registro de una cuenta de empresa (email + contraseña + nombre de contacto)."""
+class _BaseRegistrationForm(UserCreationForm):
+    """Base de los formularios de registro (email + contraseña + nombre)."""
 
     email = forms.EmailField(label="Correo electrónico")
     first_name = forms.CharField(label="Nombre", max_length=150, required=False)
@@ -34,6 +34,14 @@ class CompanyRegistrationForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("Ya existe una cuenta con este correo.")
         return email
+
+
+class CompanyRegistrationForm(_BaseRegistrationForm):
+    """Registro de una cuenta de empresa."""
+
+
+class AttendeeRegistrationForm(_BaseRegistrationForm):
+    """Registro de una cuenta de asistente (público general)."""
 
 
 class EmailAuthenticationForm(AuthenticationForm):

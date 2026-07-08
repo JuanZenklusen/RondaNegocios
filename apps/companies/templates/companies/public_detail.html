@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}{{ company.display_name }} — RondaNegocios{% endblock %}
+{% block meta_description %}{{ company.description|striptags|truncatechars:155 }}{% endblock %}
+
+{% block body %}
+<div class="container py-3 py-md-4">
+
+  <nav class="mb-4">
+    <a href="{% url 'core:home' %}" class="text-decoration-none d-inline-flex align-items-center">
+      <div class="brand-badge bg-dark rounded-3 text-white me-2">
+        <i class="fa-solid fa-circle-nodes text-info"></i>
+      </div>
+      <span class="fw-bold text-dark fs-6">RondaNegocios</span>
+    </a>
+  </nav>
+
+  <!-- Encabezado -->
+  <div class="glass-card p-4 p-md-5 mb-4">
+    <div class="d-flex flex-column flex-md-row gap-4 align-items-md-center">
+      <div class="flex-shrink-0">
+        {% if company.logo %}
+          <img src="{{ company.logo.url }}" alt="Logo de {{ company.display_name }}"
+               class="rounded-4" style="width: 96px; height: 96px; object-fit: cover;">
+        {% else %}
+          <div class="brand-badge bg-dark rounded-4 text-white" style="width: 96px; height: 96px;">
+            <i class="fa-solid fa-building fs-1 text-info"></i>
+          </div>
+        {% endif %}
+      </div>
+      <div class="flex-grow-1" style="min-width: 0;">
+        <h1 class="fw-bold mb-1">{{ company.display_name }}</h1>
+        {% if company.nombre_fantasia and company.razon_social != company.nombre_fantasia %}
+          <p class="text-secondary small mb-2">{{ company.razon_social }}</p>
+        {% endif %}
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          {% if company.rubro %}
+            <span class="badge badge-glass-match">{{ company.rubro.name }}</span>
+          {% endif %}
+          {% if company.city or company.province %}
+            <span class="small text-secondary">
+              <i class="fa-solid fa-location-dot me-1"></i>{{ company.city }}{% if company.city and company.province %}, {% endif %}{{ company.province }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if company.description %}
+      <p class="mt-4 mb-0 text-secondary">{{ company.description|linebreaksbr }}</p>
+    {% endif %}
+
+    <!-- Contacto / redes -->
+    <div class="d-flex flex-wrap gap-2 mt-4">
+      {% if company.website %}
+        <a href="{{ company.website }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-3">
+          <i class="fa-solid fa-globe me-1"></i> Sitio web
+        </a>
+      {% endif %}
+      {% if company.linkedin %}<a href="{{ company.linkedin }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-brands fa-linkedin me-1"></i> LinkedIn</a>{% endif %}
+      {% if company.instagram %}<a href="{{ company.instagram }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-brands fa-instagram me-1"></i> Instagram</a>{% endif %}
+      {% if company.facebook %}<a href="{{ company.facebook }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-3"><i class="fa-brands fa-facebook me-1"></i> Facebook</a>{% endif %}
+    </div>
+  </div>
+
+  <div class="row g-3 g-md-4">
+    <!-- Productos y servicios -->
+    <div class="col-12 col-lg-7">
+      {% if company.products.all %}
+      <div class="glass-card p-4 mb-3">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-box text-primary me-2"></i>Productos</h5>
+        {% for p in company.products.all %}
+          <div class="mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
+            <div class="fw-semibold">{{ p.name }}</div>
+            {% if p.description %}<div class="small text-secondary">{{ p.description }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if company.services.all %}
+      <div class="glass-card p-4 mb-3">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-gear text-primary me-2"></i>Servicios</h5>
+        {% for s in company.services.all %}
+          <div class="mb-2 pb-2 {% if not forloop.last %}border-bottom{% endif %}">
+            <div class="fw-semibold">{{ s.name }}</div>
+            {% if s.description %}<div class="small text-secondary">{{ s.description }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if company.needs.all %}
+      <div class="glass-card p-4 mb-3">
+        <h5 class="fw-bold mb-3"><i class="fa-solid fa-magnifying-glass text-primary me-2"></i>Qué busca</h5>
+        <ul class="mb-0 ps-3">
+          {% for n in company.needs.all %}<li class="mb-1">{{ n.description }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Ficha -->
+    <div class="col-12 col-lg-5">
+      <div class="glass-card p-4">
+        <h6 class="fw-bold mb-3">Información</h6>
+        {% if company.cuit %}<p class="small mb-2"><span class="text-secondary">CUIT:</span> {{ company.cuit }}</p>{% endif %}
+        {% if company.employees_count %}<p class="small mb-2"><span class="text-secondary">Empleados:</span> {{ company.employees_count }}</p>{% endif %}
+        {% if company.address %}<p class="small mb-2"><span class="text-secondary">Dirección:</span> {{ company.address }}</p>{% endif %}
+        {% if company.country %}<p class="small mb-2"><span class="text-secondary">País:</span> {{ company.country }}</p>{% endif %}
+        {% if company.production_capacity %}
+          <hr><p class="small mb-1 fw-semibold">Capacidad productiva</p>
+          <p class="small text-secondary mb-0">{{ company.production_capacity|linebreaksbr }}</p>
+        {% endif %}
+        {% if company.certifications %}
+          <hr><p class="small mb-1 fw-semibold">Certificaciones</p>
+          <p class="small text-secondary mb-0">{{ company.certifications|linebreaksbr }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <p class="text-center text-muted small mt-5">Perfil en RondaNegocios</p>
+</div>
+{% endblock %}

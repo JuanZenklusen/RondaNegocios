@@ -58,34 +58,55 @@ Convenciones y sistema de diseño: ver `CLAUDE.md`. Spec funcional: `Idea-de-pro
   todo; sin org no ve nada) + validación funcional del seed y registro. Los modelos
   del dominio (Fase 3+) heredarán de `OrganizationScopedModel`.
 
-## Fase 3 — Empresas (perfil tipo LinkedIn)
+## Fase 3 — Empresas (perfil tipo LinkedIn) ✅
 
-- [ ] App `companies`: modelos `Company`, `Rubro`, `Product`, `Service`, `Need`
-- [ ] Perfil completo (razón social, CUIT, logo, descripción, rubro, web, redes,
-      dirección, localidad/provincia/país, empleados, capacidad, certificaciones)
-- [ ] Carga de logo/imágenes (media)
-- [ ] Edición de perfil (formularios crispy, responsive)
-- [ ] **Perfil público** de la empresa (URL amigable, SEO, sin login)
-- **Validación**: crear una empresa completa, editarla, ver su perfil público en
-  mobile y desktop.
+- [x] App `companies`: modelos `Company` (hereda `OrganizationScopedModel`),
+      `Rubro`, `Product`, `Service`, `Need`
+- [x] Validador de **CUIT** con dígito verificador (`validators.py`)
+- [x] Perfil completo (razón social, nombre fantasía, CUIT, logo, descripción,
+      rubro, web, redes, dirección, localidad/provincia/país, empleados,
+      capacidad productiva, certificaciones, `is_public`)
+- [x] Carga de logo (media, Pillow) + slug público autogenerado y único
+- [x] Edición de perfil con **crispy** + **inline formsets** (productos/servicios/
+      necesidades) con "Agregar fila" por JS; lógica de get-or-create en `services.py`
+- [x] **Perfil público** SEO en `/empresa/<slug>/` (sin login, respeta `is_public`)
+- [x] Seed de 15 rubros; admin con inlines
+- [x] 14 tests nuevos (validador CUIT, modelo, vistas, público/privado) — 31 en total
+- **Validación**: hecha vía test client (edición crea company, guarda formsets,
+  rechaza CUIT inválido, perfil público 200 / privado 404). Falta eyeball visual.
 
-## Fase 4 — Networking / directorio
+## Fase 4 — Networking / directorio ✅
 
-- [ ] Buscar y filtrar empresas (por rubro, ubicación, texto)
-- [ ] Directorio paginado y responsive
-- [ ] Guardar favoritos
-- [ ] Solicitar contacto / conectar (sin exponer datos de contacto por ahora)
-- **Validación**: buscar y filtrar con datos de prueba; agregar/quitar favoritos.
+- [x] App `networking`: modelos `Favorite` y `ConnectionRequest` (unique
+      constraints)
+- [x] Directorio paginado (12/pág) y responsive, scopeado por organización, sólo
+      perfiles públicos, excluye la propia empresa (`selectors.search_companies`)
+- [x] Búsqueda por texto (razón social/fantasía/descripción/productos/servicios)
+      y filtros por rubro y provincia
+- [x] Favoritos: toggle vía endpoint JSON (fetch + CSRF) + página de favoritos
+- [x] Solicitar conexión (endpoint JSON con confirmación SweetAlert2) + página de
+      conexiones (recibidas: aceptar/rechazar; enviadas con estado). Sin compartir
+      datos de contacto todavía.
+- [x] Admin, sidebar "Red de Empresas" conectado, 15 tests nuevos — 45 en total
+- **Validación**: hecha vía test client (búsqueda/filtros, favoritos add/remove,
+  conexión enviar→aceptar, scoping de permisos). Falta eyeball visual.
 
-## Fase 5 — Gestión de eventos
+## Fase 5 — Gestión de eventos ✅
 
-- [ ] App `events`: modelo `Event` (tipos, fecha_inicio/fin, modalidad, ubicación,
-      cupos, costos, estado), `Table` (mesas), `TimeBlock` (bloques horarios)
-- [ ] CRUD de eventos para el rol organización
-- [ ] Configuración de la ronda: duración de reunión y cantidad por empresa,
-      eventos multi-día
-- [ ] Listado público de próximos eventos
-- **Validación**: crear un evento con mesas y bloques, verlo en el listado público.
+- [x] Nuevo rol **`attendee`** (público general) + registro de asistente
+- [x] App `events`: `Event` (scoped; tipos, modalidad, estado, fechas multi-día,
+      ubicación, cupo, precio, config de ronda), `Activity` (programa: charlas,
+      exposiciones, reuniones públicas…), `Table`, `TimeBlock`
+- [x] CRUD de eventos para rol organización (list/create/update/delete) con
+      actividades vía inline formset; scopeado por organización
+- [x] Listado público de próximos eventos + detalle público con el programa
+- [x] Botón **"Inscribirme"** provisorio (pago **simulado** con SweetAlert; la
+      integración real de Mercado Pago es fase posterior)
+- [x] Sidebar: "Eventos" (todos) y "Gestión de eventos" (solo organizadores)
+- [x] 13 tests nuevos — 58 en total
+- **Validación**: hecha vía test client (crear evento con actividad, visibilidad
+  pública según estado/is_public, permisos por rol). Falta eyeball visual.
+- Nota: generación automática de mesas/bloques y la agenda se harán en la Fase 8.
 
 ## Fase 6 — Inscripciones
 
